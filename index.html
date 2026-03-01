@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Discover what your metadata reveals about your life. Privacy-first, runs entirely in your browser." />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Sagan" />
+    <meta property="og:title" content="Sagan — What Your Metadata Reveals" />
+    <meta property="og:description" content="Discover what your metadata reveals about your life. Analyze GDPR exports from WhatsApp, Instagram, Google, Telegram, TikTok, and X. 100% private — runs entirely in your browser." />
+    <meta property="og:image" content="https://saganapp.github.io/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Sagan — Privacy-first metadata analysis tool" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Sagan — What Your Metadata Reveals" />
+    <meta name="twitter:description" content="Discover what your metadata reveals about your life. 100% private — runs entirely in your browser." />
+    <meta name="twitter:image" content="https://saganapp.github.io/og-image.png" />
+    <meta name="twitter:image:alt" content="Sagan — Privacy-first metadata analysis tool" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#2b2d7e" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)" />
+    <title>Sagan — What Your Metadata Reveals</title>
+    <script>
+      // Prevent FOUC: apply saved theme before first paint
+      (function() {
+        var t = localStorage.getItem('sagan-theme') || 'system';
+        var d = t === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : t;
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(d);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

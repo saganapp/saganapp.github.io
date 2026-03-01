@@ -1,0 +1,11 @@
+{
+  "name": "Sagan \u2014 What Your Metadata Reveals",
+  "short_name": "Sagan",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2b2d7e",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ]
+}
