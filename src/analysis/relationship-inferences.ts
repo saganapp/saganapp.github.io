@@ -56,7 +56,7 @@ export function computeRelationshipTrendInference(
 
   const steepest = significant[0]; // Already sorted by |changePct|
 
-  const direction = steepest.direction === "fading" ? "fading" : "growing";
+  const direction = steepest.direction === "fading" ? "direction.fading" : "direction.growing";
 
   return {
     id: "relationship-trend",

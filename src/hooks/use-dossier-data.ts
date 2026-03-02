@@ -97,7 +97,7 @@ export function useDossierData(): DossierData {
 
       const sleepDrift = driftCard ? {
         minutes: Number(driftCard.titleParams?.minutes ?? 0),
-        direction: String(driftCard.descParams?.direction ?? "later") as "later" | "earlier",
+        direction: String(driftCard.descParams?.direction ?? "direction.later").replace("direction.", "") as "later" | "earlier",
       } : null;
 
       const platformMigration = migrationCard

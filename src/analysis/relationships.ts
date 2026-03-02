@@ -256,13 +256,13 @@ export function computeSocialCircles(
   for (const p of profiles) {
     let label: string;
     if (p.nightRatio > 0.3) {
-      label = "Night circle";
+      label = "circle.nightCircle";
     } else if (p.weekdayRatio > 0.75 && (p.dominantWindow === "08-12" || p.dominantWindow === "12-16")) {
-      label = "Work";
+      label = "circle.work";
     } else if (p.weekdayRatio < 0.4) {
-      label = "Weekend group";
+      label = "circle.weekendGroup";
     } else {
-      label = "Close friends";
+      label = "circle.closeFriends";
     }
 
     if (!circles.has(label)) circles.set(label, []);

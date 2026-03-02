@@ -60,22 +60,44 @@ const iconMap = {
   headphones: Headphones,
 };
 
+/** Regex matching known i18n key prefixes used as param values */
+const I18N_KEY_RE = /(?:direction|pattern|circle|category)\.[a-zA-Z]+/g;
+
 /** Resolve dayIndex → dayName and daysOfWeek → days before passing to t() */
 function resolveParams(
   params: TranslationParams | undefined,
   t: (key: string, params?: TranslationParams) => string,
 ): TranslationParams | undefined {
   if (!params) return params;
-  let resolved = params;
+  const resolved = { ...params };
 
   if ("dayIndex" in resolved) {
-    resolved = { ...resolved, dayName: t(`day.full.${resolved.dayIndex}`) };
+    resolved.dayName = t(`day.full.${resolved.dayIndex}`);
   }
 
   if ("daysOfWeek" in resolved && typeof resolved.daysOfWeek === "string") {
     const indices = (resolved.daysOfWeek as string).split(",").map(Number);
     const days = formatDays(indices, (i) => t(`day.short.${i}`));
-    resolved = { ...resolved, days };
+    resolved.days = days;
+  }
+
+  // Pre-translate string param values that are i18n keys
+  for (const [key, val] of Object.entries(resolved)) {
+    if (typeof val !== "string" || val === "") continue;
+    const translated = t(val);
+    if (translated !== val) {
+      // Simple key match — also pass sibling params for sub-interpolation
+      resolved[key] = t(val, resolved);
+    } else {
+      // Try translating embedded keys (e.g., "circle.nightCircle (3), circle.work (2)")
+      const withTranslated = val.replace(I18N_KEY_RE, (match) => {
+        const tr = t(match);
+        return tr !== match ? tr : match;
+      });
+      if (withTranslated !== val) {
+        resolved[key] = withTranslated;
+      }
+    }
   }
 
   return resolved;

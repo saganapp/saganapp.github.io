@@ -41,11 +41,11 @@ export function computeListeningSchedule(
 
   // Detect pattern from peak hour
   let pattern: string;
-  if (peakHour >= 6 && peakHour <= 9) pattern = "morning commute";
-  else if (peakHour >= 10 && peakHour <= 14) pattern = "midday";
-  else if (peakHour >= 15 && peakHour <= 18) pattern = "afternoon/commute";
-  else if (peakHour >= 19 && peakHour <= 22) pattern = "evening wind-down";
-  else pattern = "late-night";
+  if (peakHour >= 6 && peakHour <= 9) pattern = "pattern.morningCommute";
+  else if (peakHour >= 10 && peakHour <= 14) pattern = "pattern.midday";
+  else if (peakHour >= 15 && peakHour <= 18) pattern = "pattern.afternoonCommute";
+  else if (peakHour >= 19 && peakHour <= 22) pattern = "pattern.eveningWindDown";
+  else pattern = "pattern.lateNight";
 
   return {
     id: "listening-schedule",
@@ -149,11 +149,8 @@ export function computeContentMix(
   const podcastPct = Math.round((podcast / plays.length) * 100);
 
   // Build extra info
-  let extra = "";
-  if (audiobook > 0) {
-    const audiobookPct = Math.round((audiobook / plays.length) * 100);
-    extra = `Plus ${audiobook} audiobook plays (${audiobookPct}%).`;
-  }
+  const audiobookPct = audiobook > 0 ? Math.round((audiobook / plays.length) * 100) : 0;
+  const extra = audiobook > 0 ? "inference.contentMix.audiobook" : "";
 
   // Only show if there's a meaningful mix
   if (podcast < 5 && audiobook < 5) return null;
@@ -164,7 +161,7 @@ export function computeContentMix(
     titleKey: "inference.contentMix.title",
     titleParams: { musicPct, podcastPct },
     descKey: "inference.contentMix.desc",
-    descParams: { total: plays.length, music, podcast, extra },
+    descParams: { total: plays.length, music, podcast, extra, audiobook, audiobookPct },
     privacyKey: "inference.contentMix.privacy",
   };
 }

@@ -142,7 +142,7 @@ export function ContactRankingTable({
                             .slice(0, 3)
                             .map(
                               ([cat, count]) =>
-                                `${formatCompact(count)} ${cat}`,
+                                `${formatCompact(count)} ${t(cat)}`,
                             )
                             .join(" \u00b7 ")}
                         </div>

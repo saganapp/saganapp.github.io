@@ -138,7 +138,7 @@ export function computeSleepDrift(events: MetadataEvent[]): InferenceCard | null
   // Determine direction based on chronological order
   const firstMonth = monthMedians[0];
   const lastMonth = monthMedians[monthMedians.length - 1];
-  const direction = lastMonth.median > firstMonth.median ? "later" : "earlier";
+  const direction = lastMonth.median > firstMonth.median ? "direction.later" : "direction.earlier";
 
   return {
     id: "sleep-drift",
@@ -495,7 +495,7 @@ export function computeWeekendPlatformShift(events: MetadataEvent[]): InferenceC
 
   let bestPlatform: Platform | null = null;
   let bestRatio = 0;
-  let bestDirection = "higher";
+  let bestDirection = "direction.higher";
   let bestWeekendAvg = 0;
   let bestWeekdayAvg = 0;
 
@@ -517,28 +517,28 @@ export function computeWeekendPlatformShift(events: MetadataEvent[]): InferenceC
 
     if (ratio > 2.0 && ratio > bestRatio) {
       // If the previous best was also "higher", it becomes second
-      if (bestPlatform && bestDirection === "lower") {
+      if (bestPlatform && bestDirection === "direction.lower") {
         secondPlatform = bestPlatform;
         secondRatio = bestRatio;
       }
       bestPlatform = p;
       bestRatio = ratio;
-      bestDirection = "higher";
+      bestDirection = "direction.higher";
       bestWeekendAvg = weekendAvg;
       bestWeekdayAvg = weekdayAvg;
     } else if (ratio < 0.4 && (1 / ratio) > bestRatio) {
-      if (bestPlatform && bestDirection === "higher") {
+      if (bestPlatform && bestDirection === "direction.higher") {
         secondPlatform = bestPlatform;
         secondRatio = bestRatio;
       }
       bestPlatform = p;
       bestRatio = 1 / ratio;
-      bestDirection = "lower";
+      bestDirection = "direction.lower";
       bestWeekendAvg = weekendAvg;
       bestWeekdayAvg = weekdayAvg;
     } else if (ratio > 2.0 || ratio < 0.4) {
       const effectiveRatio = ratio > 1 ? ratio : 1 / ratio;
-      const dir = ratio > 1 ? "higher" : "lower";
+      const dir = ratio > 1 ? "direction.higher" : "direction.lower";
       if (dir !== bestDirection && effectiveRatio > secondRatio) {
         secondPlatform = p;
         secondRatio = effectiveRatio;

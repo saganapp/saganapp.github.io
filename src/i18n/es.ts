@@ -754,6 +754,55 @@ export const es: Record<string, string> = {
   "notFound.pageTitle": "No encontrado",
 
   "a11y.skipToContent": "Ir al contenido",
+  "a11y.close": "Cerrar",
+  "a11y.signal": "Señal",
+
+  // Etiquetas de dirección
+  "direction.growing": "creciendo",
+  "direction.fading": "decayendo",
+  "direction.later": "más tarde",
+  "direction.earlier": "más temprano",
+  "direction.higher": "mayor",
+  "direction.lower": "menor",
+
+  // Etiquetas de patrón de escucha
+  "pattern.morningCommute": "desplazamiento matutino",
+  "pattern.midday": "mediodía",
+  "pattern.afternoonCommute": "tarde/desplazamiento",
+  "pattern.eveningWindDown": "relajación nocturna",
+  "pattern.lateNight": "noche",
+
+  // Etiquetas de círculos sociales
+  "circle.nightCircle": "Círculo nocturno",
+  "circle.work": "Trabajo",
+  "circle.weekendGroup": "Grupo de fin de semana",
+  "circle.closeFriends": "Amigos cercanos",
+
+  // Etiquetas de categorías de eventos
+  "category.Messages": "Mensajes",
+  "category.Reactions": "Reacciones",
+  "category.Media": "Multimedia",
+  "category.Calls": "Llamadas",
+  "category.Search": "Búsqueda",
+  "category.Browsing": "Navegación",
+  "category.Stories": "Historias",
+  "category.Calendar": "Calendario",
+  "category.Social": "Social",
+  "category.Wellness": "Bienestar",
+  "category.Music": "Música",
+  "category.Other": "Otro",
+  "category.DMs": "Mensajes directos",
+  "category.Mentions": "Menciones",
+
+  // Error boundary
+  "error.sectionFailed": "No se pudo cargar esta sección.",
+  "error.tryAgain": "Reintentar",
+  "error.somethingWrong": "Algo salió mal",
+  "error.unexpectedError": "Ocurrió un error inesperado. Intenta recargar la página.",
+  "error.reload": "Recargar",
+
+  // Content mix audiobook extra
+  "inference.contentMix.audiobook": "Además {{audiobook}} reproducciones de audiolibros ({{audiobookPct}}%).",
 
   "chart.resetZoom": "Restablecer zoom",
   "chart.total": "Total",

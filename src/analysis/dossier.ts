@@ -388,7 +388,7 @@ export function buildDossier(input: BuildDossierInput): DossierProfile {
     events.behavioralChanges.push({
       date: stats.effectiveRange ? formatMonth(stats.effectiveRange.end) : "",
       descriptionKey: "dossier.report.event.sleepChange",
-      descriptionParams: { minutes: sleepDrift.minutes, direction: sleepDrift.direction },
+      descriptionParams: { minutes: sleepDrift.minutes, direction: `direction.${sleepDrift.direction}` },
     });
   }
 

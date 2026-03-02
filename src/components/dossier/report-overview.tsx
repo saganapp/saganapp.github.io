@@ -30,7 +30,7 @@ export function ReportOverview({ data }: Props) {
           <ReportList
             items={data.topCategories.map((c) => (
               <span key={c.label}>
-                <span className="font-medium text-foreground">{c.label}</span>
+                <span className="font-medium text-foreground">{t(c.label)}</span>
                 {" — "}{c.count.toLocaleString()} ({c.pct}%)
               </span>
             ))}

@@ -37,7 +37,7 @@ export function ReportSocial({ data }: Props) {
           <ReportList
             items={network.socialCircles.map((c) => (
               <span key={c.label}>
-                <span className="font-medium text-foreground">{c.label}</span>
+                <span className="font-medium text-foreground">{t(c.label)}</span>
                 {" — "}{c.contacts.length} {t("dossier.report.social.network.members")}
               </span>
             ))}

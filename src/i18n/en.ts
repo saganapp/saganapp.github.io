@@ -752,6 +752,55 @@ export const en: Record<string, string> = {
   "notFound.pageTitle": "Not Found",
 
   "a11y.skipToContent": "Skip to content",
+  "a11y.close": "Close",
+  "a11y.signal": "Signal",
+
+  // Direction labels (used as param values in inference cards)
+  "direction.growing": "growing",
+  "direction.fading": "fading",
+  "direction.later": "later",
+  "direction.earlier": "earlier",
+  "direction.higher": "higher",
+  "direction.lower": "lower",
+
+  // Listening pattern labels
+  "pattern.morningCommute": "morning commute",
+  "pattern.midday": "midday",
+  "pattern.afternoonCommute": "afternoon/commute",
+  "pattern.eveningWindDown": "evening wind-down",
+  "pattern.lateNight": "late-night",
+
+  // Social circle labels
+  "circle.nightCircle": "Night circle",
+  "circle.work": "Work",
+  "circle.weekendGroup": "Weekend group",
+  "circle.closeFriends": "Close friends",
+
+  // Event category labels
+  "category.Messages": "Messages",
+  "category.Reactions": "Reactions",
+  "category.Media": "Media",
+  "category.Calls": "Calls",
+  "category.Search": "Search",
+  "category.Browsing": "Browsing",
+  "category.Stories": "Stories",
+  "category.Calendar": "Calendar",
+  "category.Social": "Social",
+  "category.Wellness": "Wellness",
+  "category.Music": "Music",
+  "category.Other": "Other",
+  "category.DMs": "DMs",
+  "category.Mentions": "Mentions",
+
+  // Error boundary
+  "error.sectionFailed": "Failed to load this section.",
+  "error.tryAgain": "Try again",
+  "error.somethingWrong": "Something went wrong",
+  "error.unexpectedError": "An unexpected error occurred. Try reloading the page.",
+  "error.reload": "Reload",
+
+  // Content mix audiobook extra
+  "inference.contentMix.audiobook": "Plus {{audiobook}} audiobook plays ({{audiobookPct}}%).",
 
   "chart.resetZoom": "Reset zoom",
   "chart.total": "Total",

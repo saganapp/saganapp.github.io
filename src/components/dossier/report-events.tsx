@@ -5,6 +5,20 @@ import { ReportSection } from "./report-section";
 import { ReportSubsection } from "./report-subsection";
 import { ReportList } from "./report-list";
 
+function translateParams(
+  params: Record<string, string | number> | undefined,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): Record<string, string | number> | undefined {
+  if (!params) return params;
+  const resolved = { ...params };
+  for (const [key, val] of Object.entries(resolved)) {
+    if (typeof val !== "string" || val === "") continue;
+    const translated = t(val);
+    if (translated !== val) resolved[key] = translated;
+  }
+  return resolved;
+}
+
 function EventItems({ items, t }: { items: DossierEventItem[]; t: (key: string, params?: Record<string, string | number>) => string }) {
   return (
     <ReportList
@@ -12,7 +26,7 @@ function EventItems({ items, t }: { items: DossierEventItem[]; t: (key: string, 
         <span key={i}>
           <span className="rounded bg-muted/40 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">{item.date}</span>
           {" — "}
-          {t(item.descriptionKey, item.descriptionParams)}
+          {t(item.descriptionKey, translateParams(item.descriptionParams, t))}
         </span>
       ))}
     />

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLocale } from "@/i18n";
 import { formatCompact } from "@/utils/format";
 import type { ActivityBreakdownItem } from "@/hooks/use-dashboard-data";
 
@@ -13,6 +14,7 @@ function truncateLabel(label: string, maxLen: number): string {
 }
 
 export function ActivityBarChart({ data }: ActivityBarChartProps) {
+  const { t } = useLocale();
   const isMobile = useIsMobile();
 
   if (data.length === 0) return null;
@@ -30,7 +32,7 @@ export function ActivityBarChart({ data }: ActivityBarChartProps) {
               className="shrink-0 truncate text-right text-[11px] text-muted-foreground"
               style={{ width: labelW }}
             >
-              {truncateLabel(item.label, isMobile ? 10 : 16)}
+              {truncateLabel(t(item.label), isMobile ? 10 : 16)}
             </span>
             <div className="relative h-6 flex-1 overflow-hidden rounded-md bg-muted/15">
               <motion.div

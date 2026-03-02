@@ -73,18 +73,18 @@ export interface InferenceCard {
 
 // Colors for activity breakdown — cross-platform
 const CATEGORY_COLORS: Record<string, string> = {
-  "Messages": "var(--platform-whatsapp)",
-  "Reactions": "var(--platform-instagram)",
-  "Media": "var(--platform-tiktok)",
-  "Calls": "var(--platform-telegram)",
-  "Browsing": "var(--platform-google)",
-  "Search": "var(--platform-twitter)",
-  "Stories": "var(--platform-instagram)",
-  "Calendar": "#8e24aa",
-  "Social": "#00897b",
-  "Wellness": "var(--platform-garmin)",
-  "Music": "var(--platform-spotify)",
-  "Other": "#78909c",
+  "category.Messages": "var(--platform-whatsapp)",
+  "category.Reactions": "var(--platform-instagram)",
+  "category.Media": "var(--platform-tiktok)",
+  "category.Calls": "var(--platform-telegram)",
+  "category.Browsing": "var(--platform-google)",
+  "category.Search": "var(--platform-twitter)",
+  "category.Stories": "var(--platform-instagram)",
+  "category.Calendar": "#8e24aa",
+  "category.Social": "#00897b",
+  "category.Wellness": "var(--platform-garmin)",
+  "category.Music": "var(--platform-spotify)",
+  "category.Other": "#78909c",
 };
 
 function computeEffectiveRange(events: MetadataEvent[]): {
@@ -184,34 +184,34 @@ function classifyEventCategory(e: MetadataEvent): string {
   switch (e.eventType) {
     case "message_sent":
     case "message_received":
-      return "Messages";
+      return "category.Messages";
     case "reaction":
-      return "Reactions";
+      return "category.Reactions";
     case "media_shared":
-      return "Media";
+      return "category.Media";
     case "call_started":
     case "call_ended":
-      return "Calls";
+      return "category.Calls";
     case "browsing":
-      return "Browsing";
+      return "category.Browsing";
     case "search":
-      return "Search";
+      return "category.Search";
     case "story_view":
-      return "Stories";
+      return "category.Stories";
     case "calendar_event":
-      return "Calendar";
+      return "category.Calendar";
     case "group_created":
     case "group_joined":
     case "group_left":
     case "contact_added":
     case "profile_update":
-      return "Social";
+      return "category.Social";
     case "wellness_log":
-      return "Wellness";
+      return "category.Wellness";
     case "media_played":
-      return "Music";
+      return "category.Music";
     default:
-      return "Other";
+      return "category.Other";
   }
 }
 

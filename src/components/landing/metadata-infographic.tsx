@@ -185,8 +185,9 @@ import type { Platform } from "@/parsers/types";
 import { PLATFORM_META } from "@/utils/platform";
 
 function SignalBars({ level, cssVar }: { level: number; cssVar: string }) {
+  const { t } = useLocale();
   return (
-    <div className="flex items-end gap-[2px]" aria-label={`Signal ${level}/5`}>
+    <div className="flex items-end gap-[2px]" aria-label={`${t("a11y.signal")} ${level}/5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <div
           key={i}

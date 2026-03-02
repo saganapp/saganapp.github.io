@@ -4,18 +4,18 @@ import { filterUserTriggered } from "./filters";
 
 function getContactCategory(e: MetadataEvent): string {
   if (e.source === "twitter") {
-    if (e.metadata.conversationId) return "DMs";
-    if (e.metadata.tweetId) return "Mentions";
+    if (e.metadata.conversationId) return "category.DMs";
+    if (e.metadata.tweetId) return "category.Mentions";
   }
   const categoryMap: Partial<Record<EventType, string>> = {
-    message_sent: "Messages",
-    message_received: "Messages",
-    reaction: "Reactions",
-    media_shared: "Media",
-    call_started: "Calls",
-    call_ended: "Calls",
+    message_sent: "category.Messages",
+    message_received: "category.Messages",
+    reaction: "category.Reactions",
+    media_shared: "category.Media",
+    call_started: "category.Calls",
+    call_ended: "category.Calls",
   };
-  return categoryMap[e.eventType] ?? "Other";
+  return categoryMap[e.eventType] ?? "category.Other";
 }
 
 const TIME_WINDOWS = ["00-04", "04-08", "08-12", "12-16", "16-20", "20-24"] as const;
