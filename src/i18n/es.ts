@@ -232,7 +232,7 @@ export const es: Record<string, string> = {
     "Cuenta Garmin → Gestión de datos → Exportar tus datos",
   "platform.garmin.signal": "Limitado",
   "platform.spotify.desc":
-    "Historial completo de reproducción con timestamps, direcciones IP, dispositivos, patrones de skip y uso incógnito",
+    "Historial de reproducción, direcciones IP, dispositivos, búsquedas, playlists, grafo social, PII y segmentos de marketing",
   "platform.spotify.guide":
     "Cuenta → Privacidad → Solicitar tus datos (historial extendido)",
   "platform.spotify.signal": "Muy detallado",
@@ -254,7 +254,7 @@ export const es: Record<string, string> = {
   "platform.instagram.unlock": "A\u00f1ade patrones de DMs y publicaciones con like para an\u00e1lisis de contactos y reacciones",
   "platform.telegram.unlock": "A\u00f1ade patrones de mensajer\u00eda, nombres de chats y horarios de conversaci\u00f3n",
   "platform.garmin.unlock": "Añade patrones de seguimiento de hidratación, consistencia de metas de bienestar y actividad social fitness",
-  "platform.spotify.unlock": "Añade horario de escucha, patrones de skip, seguimiento de ubicación por IP, uso de dispositivos y comportamiento incógnito",
+  "platform.spotify.unlock": "Añade horario de escucha, búsquedas, playlists, grafo social, exposición de PII, segmentos de marketing y comportamiento incógnito",
   "platform.whatsapp.unlock": "Añade actividad básica de cuenta — registro y eventos de sesión de dispositivos",
 
   // Dashboard
@@ -396,6 +396,41 @@ export const es: Record<string, string> = {
   "inference.listeningIntensity.title": "~{{hoursPerWeek}}h/semana de escucha",
   "inference.listeningIntensity.desc": "{{totalHours}}h de reproducción total en {{weeks}} semanas. Eso es el {{pctAwake}}% de tus horas despierto.",
   "inference.listeningIntensity.privacy": "El tiempo total de escucha revela cuánto de tu día pasas con auriculares — e implica qué actividades haces mientras escuchas.",
+
+  // Spotify Account Data: Comportamiento de Búsqueda
+  "inference.spotifySearch.title": "{{total}} búsquedas en Spotify (~{{perDay}}/día)",
+  "inference.spotifySearch.desc": "{{total}} consultas de búsqueda registradas. {{abandoned}} ({{abandonedPct}}%) fueron abandonadas sin seleccionar resultado.",
+  "inference.spotifySearch.privacy": "Cada búsqueda queda registrada — incluyendo errores tipográficos, búsquedas abandonadas y lo que buscaste a las 3 AM.",
+
+  // Spotify Account Data: Curación de Biblioteca
+  "inference.libraryCuration.title": "{{tracks}} canciones guardadas, {{artists}} artistas seguidos",
+  "inference.libraryCuration.desc": "Tu biblioteca tiene {{tracks}} canciones y {{banned}} canciones bloqueadas. Artistas principales: {{topArtists}}.",
+  "inference.libraryCuration.privacy": "Las canciones bloqueadas revelan lo que rechazas explícitamente — un perfil de gustos construido tanto de likes como de rechazos.",
+
+  // Spotify Account Data: Exposición de PII
+  "inference.spotifyPii.title": "{{fields}} campos de PII almacenados por {{years}} años",
+  "inference.spotifyPii.desc": "Spotify almacena {{fields}} campos de datos personales (email, fecha de nacimiento, género, etc.) recopilados durante {{years}} años. País de la cuenta: {{country}}.",
+  "inference.spotifyPii.privacy": "Años de datos personales acumulados crean un perfil de identidad detallado — nombre, edad, género, ubicación, todo vinculado a hábitos de escucha.",
+
+  // Spotify Account Data: Grafo Social
+  "inference.spotifySocial.title": "Siguiendo a {{following}}, {{followers}} seguidores",
+  "inference.spotifySocial.desc": "Tu grafo social de Spotify: {{following}} cuentas seguidas, {{followers}} seguidores. Ratio de seguimiento: {{ratio}}.",
+  "inference.spotifySocial.privacy": "Tu lista de seguidos vincula tu identidad de escucha con personas reales — revelando conexiones sociales a través del gusto musical.",
+
+  // Spotify Account Data: Identidad de Playlists
+  "inference.playlistIdentity.title": "{{count}} playlists con {{tracks}} canciones",
+  "inference.playlistIdentity.desc": "Mantienes {{count}} playlists con {{tracks}} canciones en total. {{collaborative}} son colaborativas.",
+  "inference.playlistIdentity.privacy": "Los nombres de playlists y miembros colaborativos te vinculan a círculos sociales y revelan contexto personal (ejercicio, estudio, estado de ánimo).",
+
+  // Spotify Account Data: Perfil Wrapped
+  "inference.wrappedProfile.title": "Wrapped {{year}}: {{hours}}h de escucha",
+  "inference.wrappedProfile.desc": "{{artists}} artistas únicos en {{days}} días de escucha. Edad de escucha: {{listeningAge}}. Puntuación de popularidad: {{popularity}}%.",
+  "inference.wrappedProfile.privacy": "Los datos de Wrapped incluyen rasgos de personalidad inferidos — edad de escucha, preferencia de popularidad y tempo — compartidos con socios.",
+
+  // Spotify Account Data: Segmentos Marquee
+  "inference.marqueeSegments.title": "Categorizado para {{total}} artistas por Spotify",
+  "inference.marqueeSegments.desc": "Estás segmentado en: {{segments}}. {{superCount}} artistas te ven como Super Listener.",
+  "inference.marqueeSegments.privacy": "Los segmentos Marquee se comparten con sellos discográficos para marketing dirigido — saben a qué fans dirigirse con nuevos lanzamientos.",
 
   // Cross-Platform Spotify: Música para Dormir
   "inference.musicWindDown.title": "Las noches con música terminan {{minutes}} min antes",
@@ -613,60 +648,101 @@ export const es: Record<string, string> = {
   // Dossier
   "nav.dossier": "Expediente",
   "dossier.title": "Expediente para Terceros",
-  "dossier.subtitle": "Esto es lo que un tercero podr\u00eda construir sobre ti solo con metadatos.",
+  "dossier.subtitle": "Esto es lo que un tercero podría construir sobre ti solo con metadatos.",
   "dossier.printButton": "Imprimir / Guardar PDF",
   "dossier.empty": "Importa datos para generar tu expediente.",
-  "dossier.habits.title": "H\u00e1bitos Personales",
-  "dossier.habits.sleepSchedule": "Horario de Sue\u00f1o",
-  "dossier.habits.chronotype": "Cronotipo",
-  "dossier.habits.sleepDrift": "Cambio de Sue\u00f1o",
-  "dossier.habits.firstActivity": "Primera Actividad",
-  "dossier.habits.lastActivity": "\u00daltima Actividad",
-  "dossier.habits.nightOwl": "Noct\u00e1mbulo",
-  "dossier.habits.earlyBird": "Madrugador",
-  "dossier.habits.noData": "Datos insuficientes",
-  "dossier.habits.driftLater": "Desplaz\u00e1ndose {{minutes}} min m\u00e1s tarde",
-  "dossier.habits.driftEarlier": "Desplaz\u00e1ndose {{minutes}} min m\u00e1s temprano",
-  "dossier.habits.noDrift": "Estable",
-  "dossier.social.title": "Red Social",
-  "dossier.social.innerCircle": "C\u00edrculo \u00cdntimo",
-  "dossier.social.totalContacts": "Total de Contactos",
-  "dossier.social.lateNightContacts": "Contactos Nocturnos",
-  "dossier.social.circles": "C\u00edrculos Sociales",
-  "dossier.social.mostImbalanced": "M\u00e1s Desequilibrado",
-  "dossier.social.fadingContacts": "Desvaneci\u00e9ndose",
-  "dossier.social.growingContacts": "Creciendo",
-  "dossier.social.noCircles": "Datos insuficientes para agrupar",
-  "dossier.work.title": "Perfil Laboral",
-  "dossier.work.estimatedHours": "Horas Laborales Estimadas",
-  "dossier.work.distractionMinutes": "Distracci\u00f3n/Semana",
-  "dossier.work.meetingsPerWeek": "Reuniones/Semana",
-  "dossier.work.busiestDay": "D\u00eda M\u00e1s Ocupado",
-  "dossier.digital.title": "Perfil Digital",
-  "dossier.digital.primaryPlatform": "Plataforma Principal",
-  "dossier.digital.platforms": "Plataformas Usadas",
-  "dossier.digital.devices": "Dispositivos",
-  "dossier.digital.migration": "Migraci\u00f3n de Plataforma",
-  "dossier.digital.totalHours": "Horas Totales Estimadas",
-  "dossier.digital.noMigration": "Ninguna detectada",
-  "dossier.timeline.title": "L\u00ednea de Tiempo de Eventos Vitales",
-  "dossier.timeline.gap": "Brecha de actividad",
-  "dossier.timeline.deviceSwitch": "Cambio de dispositivo",
-  "dossier.timeline.platformShift": "Cambio de plataforma",
-  "dossier.timeline.sleepChange": "Cambio en patr\u00f3n de sue\u00f1o",
-  "dossier.timeline.gap.desc": "{{days}} días de silencio ({{startDate}} a {{endDate}})",
-  "dossier.timeline.deviceSwitch.desc": "Cambio de {{from}} a {{to}}",
-  "dossier.timeline.platformShift.desc": "{{migration}}",
-  "dossier.timeline.sleepChange.desc": "Hora de dormir desplazada {{minutes}} min {{direction}}",
-  "dossier.timeline.direction.later": "más tarde",
-  "dossier.timeline.direction.earlier": "más temprano",
-  "dossier.timeline.noEvents": "No se detectaron eventos vitales",
-  "dossier.format.hours": "{{value}} h",
-  "dossier.format.approxMinutes": "~{{value}} min",
-  "dossier.warning.title": "Por Qu\u00e9 Esto Importa",
-  "dossier.warning.body": "Todo lo anterior se infiri\u00f3 sin leer un solo mensaje. Solo los metadatos \u2014 marcas de tiempo, participantes, plataformas \u2014 son suficientes para construir un perfil detallado de tus h\u00e1bitos, relaciones y eventos vitales. Esto es lo que empresas, gobiernos y corredores de datos pueden aprender de los datos que generas cada d\u00eda.",
+
+  // Dossier Report — compartido
+  "dossier.report.noData": "Datos insuficientes para determinar.",
+  "dossier.report.unknown": "Desconocido",
+  "dossier.report.direction.later": "más tarde",
+  "dossier.report.direction.earlier": "más temprano",
+
+  // Sección 1: Resumen del Sujeto
+  "dossier.report.overview.title": "Resumen del Sujeto",
+  "dossier.report.overview.summary": "El análisis cubre {{dateRange}}, con {{totalEvents}} eventos en {{platforms}} plataformas. Tiempo de pantalla estimado: ~{{screenHours}}h. Contactos únicos identificados: {{contacts}}.",
+  "dossier.report.overview.categories": "Principales categorías de actividad",
+
+  // Sección 2: Patrones de Comportamiento
+  "dossier.report.behavioral.title": "Patrones de Comportamiento",
+  "dossier.report.behavioral.sleep.title": "Perfil de Sueño y Circadiano",
+  "dossier.report.behavioral.sleep.narrative": "Ventana de sueño inferida: {{schedule}}. Clasificación: {{chronotype}} ({{confidence}}% de confianza).",
+  "dossier.report.behavioral.sleep.night-owl": "Noctámbulo",
+  "dossier.report.behavioral.sleep.early-bird": "Madrugador",
+  "dossier.report.behavioral.sleep.undetermined": "indeterminado",
+  "dossier.report.behavioral.sleep.drift": "Cambio de sueño",
+  "dossier.report.behavioral.sleep.driftDesc": "La hora de dormir se ha desplazado {{minutes}} min {{direction}} durante el periodo observado.",
+  "dossier.report.behavioral.sleep.window": "Ventana de actividad diaria",
+  "dossier.report.behavioral.sleep.windowDesc": "Primera actividad típicamente a las {{first}}, última a las {{last}}.",
+  "dossier.report.behavioral.lulls.title": "Ventanas de Inactividad Recurrentes",
+  "dossier.report.behavioral.lulls.confidence": "confianza",
+  "dossier.report.behavioral.lulls.weeks": "semanas",
+  "dossier.report.behavioral.rhythm.title": "Ritmo de Actividad",
+  "dossier.report.behavioral.rhythm.busiestDay": "Día más activo",
+  "dossier.report.behavioral.rhythm.busiestDayDesc": "{{day}} ({{pct}}% por encima del promedio)",
+  "dossier.report.behavioral.rhythm.ratio": "Ratio fin de semana/entre semana",
+  "dossier.report.behavioral.rhythm.ratioDesc": "{{ratio}}× (actividad por día de fin de semana relativa a entre semana)",
+  "dossier.report.behavioral.rhythm.peakHour": "Hora pico de actividad",
+  "dossier.report.behavioral.rhythm.peakHourDesc": "{{hour}}",
+
+  // Sección 3: Análisis de Red Social
+  "dossier.report.social.title": "Análisis de Red Social",
+  "dossier.report.social.network.title": "Resumen de la Red",
+  "dossier.report.social.network.total": "Total de contactos",
+  "dossier.report.social.network.innerCircle": "Círculo íntimo",
+  "dossier.report.social.network.members": "miembros",
+  "dossier.report.social.dynamics.title": "Dinámica de Relaciones",
+  "dossier.report.social.dynamics.imbalanced": "Más desequilibrada",
+  "dossier.report.social.dynamics.imbalancedDesc": "{{contact}} — inicias el {{pct}}% de las interacciones.",
+  "dossier.report.social.dynamics.latency": "Asimetría de respuesta",
+  "dossier.report.social.dynamics.latencyDesc": "Con {{contact}}: respondes en ~{{yours}}, responde en ~{{theirs}}.",
+  "dossier.report.social.dynamics.burst": "Comunicador intenso",
+  "dossier.report.social.dynamics.burstDesc": "{{contact}} — {{bursts}} sesiones rápidas, ~{{avg}} mensajes cada una.",
+  "dossier.report.social.trends.title": "Tendencias de Relaciones",
+  "dossier.report.social.trends.growing": "Creciendo",
+  "dossier.report.social.trends.fading": "Desvaneciéndose",
+  "dossier.report.social.circles.title": "Círculos Nocturnos y de Fin de Semana",
+  "dossier.report.social.circles.night": "Contactos nocturnos",
+  "dossier.report.social.circles.weekend": "Contactos de fin de semana",
+
+  // Sección 4: Trabajo y Productividad
+  "dossier.report.work.title": "Trabajo y Productividad",
+  "dossier.report.work.hours.title": "Impacto en Horas Laborales",
+  "dossier.report.work.hours.narrative": "Estimado ~{{minutes}} min/semana de uso de plataformas personales durante horas laborales (Lun–Vie 9–5), representando el {{pct}}% del tiempo laboral disponible.",
+  "dossier.report.work.hours.minPerWeek": "min/semana",
+  "dossier.report.work.meetings.title": "Carga de Reuniones",
+  "dossier.report.work.meetings.narrative": "Aproximadamente {{perWeek}} reuniones por semana detectadas a partir de datos de calendario.",
+
+  // Sección 5: Huella Digital
+  "dossier.report.digital.title": "Huella Digital",
+  "dossier.report.digital.platforms.title": "Ecosistema de Plataformas",
+  "dossier.report.digital.platforms.primary": "Plataforma principal",
+  "dossier.report.digital.platforms.ofActivity": "de la actividad",
+  "dossier.report.digital.platforms.all": "Todas las plataformas",
+  "dossier.report.digital.platforms.migration": "Migración de plataforma",
+  "dossier.report.digital.platforms.timeBreakdown": "Tiempo por plataforma",
+  "dossier.report.digital.devices.title": "Historial de Dispositivos",
+  "dossier.report.digital.devices.totalHours": "Tiempo total estimado",
+  "dossier.report.digital.devices.totalHoursDesc": "~{{hours}}h en todos los dispositivos",
+
+  // Sección 6: Eventos Significativos
+  "dossier.report.events.title": "Eventos Significativos",
+  "dossier.report.events.gaps": "Brechas de Actividad",
+  "dossier.report.events.devices": "Cambios de Dispositivo",
+  "dossier.report.events.platforms": "Cambios de Plataforma",
+  "dossier.report.events.behavioral": "Cambios de Comportamiento",
+  "dossier.report.event.gap": "{{days}} días de silencio ({{startDate}} a {{endDate}})",
+  "dossier.report.event.deviceSwitch": "Cambio de {{from}} a {{to}}",
+  "dossier.report.event.platformShift": "{{migration}}",
+  "dossier.report.event.sleepChange": "Hora de dormir desplazada {{minutes}} min {{direction}}",
+
+  // Sección 7: Implicaciones de Privacidad
+  "dossier.warning.title": "Implicaciones de Privacidad",
+  "dossier.warning.body": "Todo lo anterior se infirió sin leer un solo mensaje. Solo los metadatos — marcas de tiempo, participantes, plataformas — son suficientes para construir un perfil detallado de tus hábitos, relaciones y eventos vitales. Esto es lo que empresas, gobiernos y corredores de datos pueden aprender de los datos que generas cada día.",
+
+  // Dossier CTA (página de inicio)
   "dossier.cta.title": "Ver tu expediente completo para terceros",
-  "dossier.cta.desc": "Mira lo que un tercero podr\u00eda construir solo con tus metadatos.",
+  "dossier.cta.desc": "Mira lo que un tercero podría construir solo con tus metadatos.",
   "dossier.cta.button": "Ver Expediente",
 
   // Demo mode

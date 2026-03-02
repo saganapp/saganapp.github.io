@@ -91,7 +91,7 @@ export function ContactRankingTable({
               <th className="pb-2 pr-3 text-right font-medium">
                 {t("dashboard.contacts.interactions")}
               </th>
-              <th className="pb-2 pr-3 text-right font-medium">
+              <th className="hidden pb-2 pr-3 text-right font-medium sm:table-cell">
                 {t("dashboard.contacts.time")}
               </th>
               <th className="pb-2 font-medium">
@@ -148,7 +148,7 @@ export function ContactRankingTable({
                         </div>
                       )}
                   </td>
-                  <td className="py-2 pr-3 text-right font-mono tabular-nums text-muted-foreground">
+                  <td className="hidden py-2 pr-3 text-right font-mono tabular-nums text-muted-foreground sm:table-cell">
                     {formatTime(contact.estimatedTimeSeconds)}
                   </td>
                   <td className="py-2">

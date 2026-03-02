@@ -155,7 +155,7 @@ export function DashboardPage() {
           className="mt-4 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 dark:border-amber-900/50 dark:bg-amber-950/30"
         >
           <Info className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+          <p className="min-w-0 text-sm text-amber-800 dark:text-amber-200">
             {t("demo.banner")}
           </p>
           <Button asChild variant="outline" size="xs" className="ml-auto shrink-0">
@@ -167,7 +167,7 @@ export function DashboardPage() {
       {/* Year Filter */}
       {availableYears.length >= 2 && (
         <motion.div
-          className="mt-4 flex items-center gap-1.5"
+          className="mt-4 flex items-center gap-1.5 overflow-x-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
@@ -384,7 +384,7 @@ export function DashboardPage() {
             <CardContent>
               {loading ? (
                 <div className="space-y-3">
-                  <div className="grid gap-px" style={{ gridTemplateColumns: `auto repeat(14, 1fr)`, minWidth: 320 }}>
+                  <div className="grid gap-px" style={{ gridTemplateColumns: `auto repeat(14, 1fr)`, minWidth: 260 }}>
                     <div />
                     {Array.from({ length: 14 }, (_, i) => (
                       <Skeleton key={`h-${i}`} className="h-3 w-full" />

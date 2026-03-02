@@ -80,6 +80,7 @@ const CONTENT_SIGNATURES: { platform: Platform; paths: string[] }[] = [
     paths: [
       "Spotify Extended Streaming History/",
       "Streaming_History_Audio_",
+      "Spotify Account Data/",
     ],
   },
 ];

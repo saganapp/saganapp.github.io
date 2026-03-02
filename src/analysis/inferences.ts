@@ -35,6 +35,15 @@ import {
   computeListeningCountries,
   computeListeningIntensity,
 } from "./spotify-inferences";
+import {
+  computeSearchBehavior,
+  computeLibraryCuration,
+  computeSpotifyPiiExposure,
+  computeSpotifySocialGraph,
+  computePlaylistIdentity,
+  computeSpotifyWrappedProfile,
+  computeSpotifyMarqueeSegments,
+} from "./spotify-account-inferences";
 
 function computeWorkHoursLost(
   events: MetadataEvent[],
@@ -580,6 +589,14 @@ export function computeInferences(
     computeMusicWindDown(userTriggered),
     computeSoundtrackToSilence(events),
     computeWorkListening(events, stats),
+    // Spotify account data inferences
+    computeSearchBehavior(events, stats),
+    computeLibraryCuration(events),
+    computeSpotifyPiiExposure(events),
+    computeSpotifySocialGraph(events),
+    computePlaylistIdentity(events),
+    computeSpotifyWrappedProfile(events),
+    computeSpotifyMarqueeSegments(events),
   ];
 
   for (const inf of inferenceComputers) {

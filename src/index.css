@@ -177,6 +177,12 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  .decorative-bg {
+    opacity: 0.12;
+  }
+  .dark .decorative-bg {
+    opacity: 0.14;
+  }
 }
 
 /* ─── Print styles ─── */
@@ -227,5 +233,25 @@ html {
   /* Reduce spacing for print density */
   .space-y-4 > * + * {
     margin-top: 0.75rem;
+  }
+
+  /* Report sections: allow breaks between, allow within for long sections */
+  .report-section {
+    break-inside: auto;
+    break-before: auto;
+  }
+
+  .report-subsection {
+    break-inside: avoid;
+    background-color: transparent !important;
+  }
+
+  /* Keep section headings with their content */
+  .report-section > h2 {
+    break-after: avoid;
+  }
+
+  .report-subsection > h3 {
+    break-after: avoid;
   }
 }

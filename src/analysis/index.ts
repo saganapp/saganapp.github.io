@@ -39,5 +39,5 @@ export {
   computeSocialCirclesInference,
 } from "./relationship-inferences";
 export { buildDossier } from "./dossier";
-export type { DossierProfile, DossierLifeEvent, BuildDossierInput } from "./dossier";
+export type { DossierProfile, DossierEventItem, BuildDossierInput } from "./dossier";
 export { computeHydrationConsistency } from "./garmin-inferences";

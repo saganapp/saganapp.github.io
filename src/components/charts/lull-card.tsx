@@ -45,7 +45,7 @@ export function LullCard({ lulls }: LullCardProps) {
           style={{
             gridTemplateColumns: `auto repeat(${HOURS.length}, 1fr)`,
             gridTemplateRows: `auto repeat(${DAYS.length}, 1fr)`,
-            minWidth: 320,
+            minWidth: 260,
           }}
         >
           {/* Top-left corner */}

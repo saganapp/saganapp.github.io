@@ -1,7 +1,7 @@
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { usePageTitle } from "@/hooks/use-page-title";
-import { Printer, Clock, Info } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Printer, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,12 +9,14 @@ import { useLocale } from "@/i18n";
 import { useAppStore } from "@/store/app-store";
 import { Link } from "react-router";
 import { useDossierData } from "@/hooks/use-dossier-data";
-import { DossierHabits } from "@/components/dossier/dossier-habits";
-import { DossierSocial } from "@/components/dossier/dossier-social";
-import { DossierWork } from "@/components/dossier/dossier-work";
-import { DossierDigital } from "@/components/dossier/dossier-digital";
-import { DossierTimeline } from "@/components/dossier/dossier-timeline";
+import { ReportOverview } from "@/components/dossier/report-overview";
+import { ReportBehavioral } from "@/components/dossier/report-behavioral";
+import { ReportSocial } from "@/components/dossier/report-social";
+import { ReportWork } from "@/components/dossier/report-work";
+import { ReportDigital } from "@/components/dossier/report-digital";
+import { ReportEvents } from "@/components/dossier/report-events";
 import { DossierWarning } from "@/components/dossier/dossier-warning";
+import { loadDemoData } from "@/demo/load-demo";
 
 const container = {
   hidden: {},
@@ -32,8 +34,17 @@ export function DossierPage() {
   const { t } = useLocale();
   const demoMode = useAppStore((s) => s.demoMode);
 
+  // Auto-load demo data when dossier is empty
+  const demoGuard = useRef(false);
+  useEffect(() => {
+    if (!loading && !hasData && !demoGuard.current) {
+      demoGuard.current = true;
+      loadDemoData();
+    }
+  }, [loading, hasData]);
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-4xl px-4 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -76,10 +87,24 @@ export function DossierPage() {
         </motion.div>
       )}
 
+      {/* Demo badge */}
+      {demoMode && !loading && hasData && (
+        <div className="mt-4 print:hidden">
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">
+            {t("demo.badge")}
+          </Badge>
+        </div>
+      )}
+
       {loading ? (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-lg" />
+        <div className="mt-8 space-y-6">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-5/6" />
+            </div>
           ))}
         </div>
       ) : !hasData || !dossier ? (
@@ -88,50 +113,40 @@ export function DossierPage() {
         </div>
       ) : (
         <motion.div
-          className="mt-8 space-y-4"
+          className="mt-8 space-y-6"
           variants={container}
           initial="hidden"
           animate="show"
         >
-          {/* 2x2 Grid of Profile Sections */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <motion.div variants={item}>
-              <DossierHabits habits={dossier.personalHabits} />
-            </motion.div>
-            <motion.div variants={item}>
-              <DossierSocial social={dossier.socialNetwork} />
-            </motion.div>
-            <motion.div variants={item}>
-              <DossierWork work={dossier.workProfile} />
-            </motion.div>
-            <motion.div variants={item}>
-              <DossierDigital digital={dossier.digitalProfile} />
-            </motion.div>
-          </div>
-
-          {/* Life Events Timeline */}
           <motion.div variants={item}>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <CardTitle className="text-base">{t("dossier.timeline.title")}</CardTitle>
-                  {demoMode && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 text-muted-foreground">{t("demo.badge")}</Badge>}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <DossierTimeline events={dossier.lifeEvents} />
-              </CardContent>
-            </Card>
+            <ReportOverview data={dossier.overview} />
           </motion.div>
 
-          {/* Privacy Warning */}
+          <motion.div variants={item}>
+            <ReportBehavioral data={dossier.behavioral} />
+          </motion.div>
+
+          <motion.div variants={item}>
+            <ReportSocial data={dossier.social} />
+          </motion.div>
+
+          <motion.div variants={item}>
+            <ReportWork data={dossier.work} />
+          </motion.div>
+
+          <motion.div variants={item}>
+            <ReportDigital data={dossier.digital} />
+          </motion.div>
+
+          <motion.div variants={item}>
+            <ReportEvents data={dossier.events} />
+          </motion.div>
+
           <motion.div variants={item}>
             <DossierWarning />
           </motion.div>
         </motion.div>
       )}
-
     </div>
   );
 }
