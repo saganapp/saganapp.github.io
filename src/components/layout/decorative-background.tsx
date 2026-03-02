@@ -28,9 +28,10 @@ interface TileGroups {
 
 function gutterDensity(cx: number, width: number, contentRatio: number): number {
   const contentHalf = (width * contentRatio) / 2;
+  const padding = 60;
   const center = width / 2;
-  const contentLeft = center - contentHalf;
-  const contentRight = center + contentHalf;
+  const contentLeft = center - contentHalf - padding;
+  const contentRight = center + contentHalf + padding;
 
   if (cx >= contentLeft && cx <= contentRight) return 0;
 
