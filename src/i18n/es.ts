@@ -7,6 +7,15 @@ export const es: Record<string, string> = {
 
   // Footer
   "footer.privacy": "Tus datos nunca salen de tu dispositivo.",
+  "footer.about.title": "Por qué existe Sagan",
+  "footer.about.blurb":
+    "Las plataformas no necesitan leer tus mensajes para conocer tus hábitos, relaciones y rutinas. Solo con los metadatos se puede trazar un retrato extraordinariamente detallado de tu vida. Creé Sagan para hacer visible esta capa invisible — porque el primer paso para proteger tu privacidad es entender lo que ya está expuesto.",
+  "footer.book.question":
+    "¿Quieres aprender más sobre cómo proteger tu privacidad digital?",
+  "footer.book.title": "Ciberdefensa Personal para Celebridades",
+  "footer.book.cta": "Saber más",
+  "footer.connect.title": "Conectar",
+  "footer.connect.twitter": "Seguir a @olemoudi en X",
 
   // Theme
   "theme.toggle": "Cambiar tema",
@@ -200,12 +209,16 @@ export const es: Record<string, string> = {
   "import.history.imported": "Importado {{date}}",
   "import.sources.title": "Fuentes Compatibles",
 
+  // Chat export sender selection
+  "import.chat.selectSender": "Selecciona tu nombre...",
+  "import.chat.selectSenderRequired": "Selecciona tu nombre en cada exportación de chat antes de importar",
+
   // Platform descriptions
   "platform.whatsapp.desc":
-    "Registro de cuenta, cambios de perfil y sesiones de dispositivos",
+    "Actividad de cuenta, sesiones de dispositivos y metadatos de mensajes",
   "platform.whatsapp.guide":
-    "Ajustes → Cuenta → Solicitar info. de la cuenta",
-  "platform.whatsapp.signal": "Mínimo",
+    "Ajustes → Cuenta → Solicitar info. de la cuenta, o usa 'Exportar chat' en cualquier conversación",
+  "platform.whatsapp.signal": "Bajo",
   "platform.instagram.desc":
     "DMs enviados y publicaciones con like",
   "platform.instagram.guide":
@@ -259,7 +272,7 @@ export const es: Record<string, string> = {
   "platform.telegram.unlock": "A\u00f1ade patrones de mensajer\u00eda, nombres de chats y horarios de conversaci\u00f3n",
   "platform.garmin.unlock": "Añade patrones de seguimiento de hidratación, consistencia de metas de bienestar y actividad social fitness",
   "platform.spotify.unlock": "Añade horario de escucha, búsquedas, playlists, grafo social, exposición de PII, segmentos de marketing y comportamiento incógnito",
-  "platform.whatsapp.unlock": "Añade actividad básica de cuenta — registro y eventos de sesión de dispositivos",
+  "platform.whatsapp.unlock": "Añade actividad de cuenta, sesiones de dispositivos y patrones de mensajería desde exportaciones de chat",
 
   // Dashboard
   "dashboard.title": "Panel",
@@ -285,6 +298,8 @@ export const es: Record<string, string> = {
   "dashboard.nightContacts.empty": "No se identificaron contactos nocturnos",
   "dashboard.weekendContacts.empty": "No se identificaron contactos de fin de semana",
   "dashboard.devices.empty": "No se detectaron dispositivos",
+  "dashboard.map.title": "Dónde te sitúan tus metadatos",
+  "dashboard.map.desc": "Países identificados a partir de los metadatos de conexión de tus plataformas",
   "dashboard.contacts.empty": "No se encontraron contactos",
   "dashboard.inferences.empty": "No hay suficientes datos para inferencias",
   "dashboard.yearHint": "Detectado para años específicos: {{years}}",

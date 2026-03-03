@@ -31,6 +31,7 @@ import type { Platform } from "@/parsers/types";
 
 export interface DossierData {
   loading: boolean;
+  isDemo: boolean;
   dossier: DossierProfile | null;
   hasData: boolean;
 }
@@ -40,6 +41,7 @@ export function useDossierData(): DossierData {
   const demoMode = useAppStore((s) => s.demoMode);
   const selectedYear = useAppStore((s) => s.selectedYear);
   const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(false);
   const [dossier, setDossier] = useState<DossierProfile | null>(null);
   const [hasData, setHasData] = useState(false);
 
@@ -51,9 +53,11 @@ export function useDossierData(): DossierData {
     Promise.all([getAllEvents(), getDailyAggregates()]).then(([dbEvents, allAggregates]) => {
       if (cancelled) return;
 
-      const allEvents = dbEvents.length > 0 ? dbEvents : (demoMode ? (getDemoEvents() ?? []) : []);
+      const usingDemo = dbEvents.length === 0 && demoMode;
+      const allEvents = dbEvents.length > 0 ? dbEvents : (usingDemo ? (getDemoEvents() ?? []) : []);
       const events = filterEventsByYear(allEvents, selectedYear);
       if (events.length === 0) {
+        setIsDemo(false);
         setDossier(null);
         setHasData(false);
         setLoading(false);
@@ -234,6 +238,7 @@ export function useDossierData(): DossierData {
         activityBreakdown,
       });
 
+      setIsDemo(usingDemo);
       setDossier(profile);
       setHasData(true);
       setLoading(false);
@@ -244,7 +249,7 @@ export function useDossierData(): DossierData {
     return () => { cancelled = true; };
   }, [dataVersion, demoMode, selectedYear]);
 
-  return { loading, dossier, hasData };
+  return { loading, isDemo, dossier, hasData };
 }
 
 function classifyCategory(eventType: string): string {

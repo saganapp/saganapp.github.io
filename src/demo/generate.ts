@@ -509,7 +509,7 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
           trackName: track,
           contentName: track,
           msPlayed: 180_000 + Math.floor(windDownRand() * 120_000), // 3-5 min, full listens
-          connCountry: "ES",
+          connCountry: windDownRand() < 0.95 ? "ES" : (windDownRand() < 0.5 ? "FR" : "PT"),
           skipped: false,
           shuffle: false,
           incognitoMode: false,
@@ -560,7 +560,7 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
         trackName: track,
         contentName: track,
         msPlayed: 600_000 + Math.floor(workListenRand() * 1_500_000), // 10-35 min, avg ~22 min
-        connCountry: "ES",
+        connCountry: workListenRand() < 0.95 ? "ES" : (workListenRand() < 0.5 ? "FR" : "DE"),
         skipped: workListenRand() < 0.05,
         shuffle: workListenRand() < 0.60,
         incognitoMode: false,
@@ -789,6 +789,11 @@ function generateSingleEvent(
   const metadata: Record<string, unknown> = { device };
   if (contact?.isGroup) metadata.group = contact.name;
 
+  // Connection country for non-Spotify, non-Garmin platforms (makes map multi-platform in demo)
+  if (platform !== "spotify" && platform !== "garmin") {
+    metadata.connCountry = rand() < 0.92 ? "ES" : (rand() < 0.5 ? "FR" : "PT");
+  }
+
   // Email metadata for Google messages (enables email-volume + email-response-time)
   if (platform === "google" && (eventType === "message_sent" || eventType === "message_received")) {
     metadata.subSource = "Gmail";
@@ -833,7 +838,8 @@ function generateSingleEvent(
     }
 
     // Connection country (mostly Spain, occasionally travel)
-    metadata.connCountry = rand() < 0.92 ? "ES" : (rand() < 0.5 ? "FR" : "PT");
+    const ccRoll = rand();
+    metadata.connCountry = ccRoll < 0.88 ? "ES" : ccRoll < 0.92 ? "FR" : ccRoll < 0.95 ? "PT" : ccRoll < 0.98 ? "DE" : "GB";
 
     // Flags
     metadata.skipped = rand() < 0.25;

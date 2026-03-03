@@ -22,7 +22,7 @@ export default defineConfig({
           if (id.includes("node_modules")) {
             if (id.includes("react-dom") || id.includes("react-router")) return "react";
             if (id.includes("framer-motion")) return "motion";
-            if (id.includes("/d3")) return "d3";
+            if (id.includes("/d3") || id.includes("topojson-client") || id.includes("world-atlas")) return "d3";
             if (id.includes("radix-ui") || id.includes("lucide-react")) return "ui";
             if (id.includes("dexie") || id.includes("zustand") || id.includes("comlink") || id.includes("fflate")) return "data";
           }

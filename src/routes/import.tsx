@@ -23,7 +23,7 @@ import { useLocale } from "@/i18n";
 import { useAppStore } from "@/store/app-store";
 import { clearAllData, getImportSessions } from "@/store/db";
 import { formatDate } from "@/utils/time";
-import { detectFiles } from "@/parsers/detect";
+import { detectFiles, scanChatExportSenders } from "@/parsers/detect";
 import { importFiles } from "@/parsers/import-orchestrator";
 import { FileDropZone } from "@/components/import/file-drop-zone";
 import { DetectedFileList } from "@/components/import/detected-file-list";
@@ -85,6 +85,22 @@ export function ImportPage() {
 
   const handleFiles = useCallback(async (files: File[]) => {
     const detected = await detectFiles(files);
+
+    // Pre-scan WhatsApp chat exports for sender names
+    const CHAT_EXPORT_RE = /^WhatsApp Chat with .+\.zip$/i;
+    for (const df of detected) {
+      if (df.platform === "whatsapp" && CHAT_EXPORT_RE.test(df.file.name)) {
+        try {
+          const senders = await scanChatExportSenders(df.file);
+          if (senders.length > 0) {
+            df.chatExportSenders = senders;
+          }
+        } catch {
+          // If scan fails, treat as regular file
+        }
+      }
+    }
+
     setDetectedFiles((prev) => [...prev, ...detected]);
     setState("files-selected");
     setError(null);
@@ -112,7 +128,18 @@ export function ImportPage() {
     );
   }, []);
 
+  const handleSenderSelect = useCallback((index: number, sender: string) => {
+    setDetectedFiles((prev) =>
+      prev.map((df, i) =>
+        i === index ? { ...df, chatExportSelectedSender: sender } : df,
+      ),
+    );
+  }, []);
+
   const hasUnselectedPlatform = detectedFiles.some((df) => df.platform === null);
+  const hasUnselectedSender = detectedFiles.some(
+    (df) => df.chatExportSenders && df.chatExportSenders.length > 0 && !df.chatExportSelectedSender,
+  );
 
   const handleImport = useCallback(async () => {
     setState("importing");
@@ -194,13 +221,14 @@ export function ImportPage() {
             onRemove={handleRemove}
             onClear={handleClear}
             onPlatformChange={handlePlatformChange}
+            onSenderSelect={handleSenderSelect}
           />
 
           {state === "files-selected" && (
             <div className="mt-4 flex items-center gap-3">
               <Button
                 onClick={handleImport}
-                disabled={hasUnselectedPlatform}
+                disabled={hasUnselectedPlatform || hasUnselectedSender}
               >
                 {t("import.start")}
                 <ArrowRight className="h-4 w-4" />
@@ -208,6 +236,11 @@ export function ImportPage() {
               {hasUnselectedPlatform && (
                 <p className="text-xs text-amber-600 dark:text-amber-400">
                   {t("import.files.selectRequired")}
+                </p>
+              )}
+              {!hasUnselectedPlatform && hasUnselectedSender && (
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  {t("import.chat.selectSenderRequired")}
                 </p>
               )}
             </div>

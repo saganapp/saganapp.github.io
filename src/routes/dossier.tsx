@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocale } from "@/i18n";
-import { useAppStore } from "@/store/app-store";
 import { Link } from "react-router";
 import { useDossierData } from "@/hooks/use-dossier-data";
 import { ReportOverview } from "@/components/dossier/report-overview";
@@ -30,9 +29,8 @@ const item = {
 
 export function DossierPage() {
   usePageTitle("pageTitle.dossier");
-  const { loading, dossier, hasData } = useDossierData();
+  const { loading, isDemo: demoMode, dossier, hasData } = useDossierData();
   const { t } = useLocale();
-  const demoMode = useAppStore((s) => s.demoMode);
 
   // Auto-load demo data when dossier is empty
   const demoGuard = useRef(false);

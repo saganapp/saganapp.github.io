@@ -143,6 +143,8 @@ export interface DetectedFile {
   platform: Platform | null;
   fileType: "zip" | "mbox" | "json";
   confidence: "filename" | "content" | "none";
+  chatExportSenders?: string[];
+  chatExportSelectedSender?: string;
 }
 
 export type ParseProgressCallback = (progress: {

@@ -15,6 +15,7 @@ import {
   BedDouble,
   FileText,
   Info,
+  Globe,
 } from "lucide-react";
 import { Link } from "react-router";
 import {
@@ -49,6 +50,7 @@ import { WorkHoursCard } from "@/components/charts/work-hours-card";
 import { LullCard } from "@/components/charts/lull-card";
 import { SleepCard } from "@/components/charts/sleep-card";
 import { EmptyStateOverlay, EmptyStateMessage } from "@/components/charts/empty-state-overlay";
+import { WorldMapChart } from "@/components/charts/world-map-chart";
 
 const container = {
   hidden: {},
@@ -68,18 +70,31 @@ function formatTimeEstimate(seconds: number): string {
 export function DashboardPage() {
   usePageTitle("pageTitle.dashboard");
   const {
-    loading: dataLoading, stats, timelineData, timelineAnnotations, heatmapData, activityBreakdown, inferences,
+    loading: dataLoading, isDemo: demoMode, stats, timelineData, timelineAnnotations, heatmapData, activityBreakdown, inferences,
     contactRankings, nightContacts, weekendContacts, devices, deviceTimeline,
-    workHoursAnalysis, lulls, sleepPatterns, availableYears, availablePlatforms, yearHints,
+    workHoursAnalysis, lulls, sleepPatterns, countryData, availableYears, allPlatforms, yearPlatformHasData, yearHints,
   } = useDashboardData();
   const { t, locale } = useLocale();
   const selectedYear = useAppStore((s) => s.selectedYear);
   const setSelectedYear = useAppStore((s) => s.setSelectedYear);
   const selectedPlatform = useAppStore((s) => s.selectedPlatform);
   const setSelectedPlatform = useAppStore((s) => s.setSelectedPlatform);
-  const demoMode = useAppStore((s) => s.demoMode);
 
   const hasData = stats.totalWithAggregates > 0;
+
+  // Handlers that auto-reset the cross-filter when the combo has no data
+  const handleSelectYear = (year: number | null) => {
+    setSelectedYear(year);
+    if (year !== null && selectedPlatform !== "all" && !yearPlatformHasData(year, selectedPlatform)) {
+      setSelectedPlatform("all");
+    }
+  };
+  const handleSelectPlatform = (platform: Platform | "all") => {
+    setSelectedPlatform(platform);
+    if (platform !== "all" && selectedYear !== null && !yearPlatformHasData(selectedYear, platform)) {
+      setSelectedYear(null);
+    }
+  };
 
   // Auto-load demo data when dashboard is empty
   const demoGuard = useRef(false);
@@ -177,26 +192,30 @@ export function DashboardPage() {
             variant={selectedYear === null ? "secondary" : "ghost"}
             size="xs"
             className="hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:shadow-none transition-all duration-150"
-            onClick={() => setSelectedYear(null)}
+            onClick={() => handleSelectYear(null)}
           >
             {t("dashboard.yearFilter.all")}
           </Button>
-          {availableYears.map((year) => (
-            <Button
-              key={year}
-              variant={selectedYear === year ? "secondary" : "ghost"}
-              size="xs"
-              className="hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:shadow-none transition-all duration-150"
-              onClick={() => setSelectedYear(year)}
-            >
-              {year}
-            </Button>
-          ))}
+          {availableYears.map((year) => {
+            const disabled = selectedPlatform !== "all" && !yearPlatformHasData(year, selectedPlatform);
+            return (
+              <Button
+                key={year}
+                variant={selectedYear === year ? "secondary" : "ghost"}
+                size="xs"
+                className="hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:shadow-none transition-all duration-150"
+                disabled={disabled}
+                onClick={() => handleSelectYear(year)}
+              >
+                {year}
+              </Button>
+            );
+          })}
         </motion.div>
       )}
 
       {/* Platform Filter */}
-      {availablePlatforms.length >= 2 && (
+      {allPlatforms.length >= 2 && (
         <motion.div
           className="mt-3 flex items-center gap-1.5 overflow-x-auto"
           initial={{ opacity: 0 }}
@@ -210,21 +229,23 @@ export function DashboardPage() {
             variant={selectedPlatform === "all" ? "secondary" : "ghost"}
             size="xs"
             className="hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:shadow-none transition-all duration-150"
-            onClick={() => setSelectedPlatform("all")}
+            onClick={() => handleSelectPlatform("all")}
           >
             {t("dashboard.platformFilter.all")}
           </Button>
-          {availablePlatforms.map((platform: Platform) => {
+          {allPlatforms.map((platform: Platform) => {
             const meta = PLATFORM_META[platform];
             const Icon = meta.icon;
             const isActive = selectedPlatform === platform;
+            const disabled = selectedYear !== null && !yearPlatformHasData(selectedYear, platform);
             return (
               <Button
                 key={platform}
                 variant={isActive ? "secondary" : "ghost"}
                 size="xs"
                 className="hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:shadow-none transition-all duration-150"
-                onClick={() => setSelectedPlatform(platform)}
+                disabled={disabled}
+                onClick={() => handleSelectPlatform(platform)}
                 style={isActive ? { borderColor: `var(${meta.cssVar})`, borderWidth: 1 } : undefined}
               >
                 <Icon className="size-3" style={{ color: `var(${meta.cssVar})` }} />
@@ -617,6 +638,27 @@ export function DashboardPage() {
               ) : (
                 <EmptyStateMessage message={t("dashboard.weekendContacts.empty")} />
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* World Map — full width */}
+        <motion.div variants={item} className="lg:col-span-2">
+          <Card className="h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-primary" />
+                <CardTitle className="text-base">{t("dashboard.map.title")}</CardTitle>
+                {demoMode && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 text-muted-foreground">{t("demo.badge")}</Badge>}
+              </div>
+              <CardDescription>{t("dashboard.map.desc")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ErrorBoundary compact>
+                <ChartContainer height={380} mobileHeight={260} loading={loading} empty={!hasData || countryData.length === 0} label={t("dashboard.map.title")}>
+                  <WorldMapChart data={countryData} locale={locale} />
+                </ChartContainer>
+              </ErrorBoundary>
             </CardContent>
           </Card>
         </motion.div>

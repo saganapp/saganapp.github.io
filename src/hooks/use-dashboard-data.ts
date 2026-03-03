@@ -22,8 +22,9 @@ import {
   detectSleepingPatterns,
   computeInferences,
   computeQuietPeriods,
+  computeCountryDataWithGeoIp,
 } from "@/analysis";
-import type { WorkHoursAnalysis, DeviceRecord, DeviceTimelineMonth, RecurringLull, SleepingPattern, SocialCircle } from "@/analysis";
+import type { WorkHoursAnalysis, DeviceRecord, DeviceTimelineMonth, RecurringLull, SleepingPattern, SocialCircle, CountryData } from "@/analysis";
 import { computeSocialCircles } from "@/analysis";
 
 export interface DashboardStats {
@@ -360,6 +361,7 @@ export interface TimelineAnnotation {
 
 export interface DashboardData {
   loading: boolean;
+  isDemo: boolean;
   stats: DashboardStats;
   timelineData: TimelineSeries[];
   timelineAnnotations: TimelineAnnotation[];
@@ -377,8 +379,11 @@ export interface DashboardData {
   lulls: RecurringLull[];
   sleepPatterns: SleepingPattern[];
   socialCircles: SocialCircle[];
+  countryData: CountryData[];
   availableYears: number[];
   availablePlatforms: Platform[];
+  allPlatforms: Platform[];
+  yearPlatformHasData: (year: number, platform: Platform) => boolean;
   yearHints: YearHints;
 }
 
@@ -446,6 +451,7 @@ export function useDashboardData(): DashboardData {
   const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Omit<DashboardData, "loading">>({
+    isDemo: false,
     stats: {
       total: 0,
       totalUserTriggered: 0,
@@ -473,8 +479,11 @@ export function useDashboardData(): DashboardData {
     lulls: [],
     sleepPatterns: [],
     socialCircles: [],
+    countryData: [],
     availableYears: [],
     availablePlatforms: [],
+    allPlatforms: [],
+    yearPlatformHasData: () => true,
     yearHints: { lulls: [], sleep: [], workHours: [], nightContacts: [], weekendContacts: [], devices: [] },
   });
 
@@ -488,8 +497,21 @@ export function useDashboardData(): DashboardData {
     Promise.all([getAllEvents(), getDailyAggregates()]).then(([dbEvents, allAggregates]) => {
       if (cancelled) return;
 
-      const allEvents = dbEvents.length > 0 ? dbEvents : (demoMode ? (getDemoEvents() ?? []) : []);
+      const isDemo = dbEvents.length === 0 && demoMode;
+      const allEvents = dbEvents.length > 0 ? dbEvents : (isDemo ? (getDemoEvents() ?? []) : []);
       const availableYears = computeAvailableYears(allEvents);
+
+      // All platforms across all years (stable — doesn't change with year filter)
+      const allPlatforms = computeAvailablePlatforms(allEvents);
+
+      // Build year×platform lookup for cross-filter disabled states
+      const ypSet = new Set<string>();
+      for (const e of allEvents) {
+        ypSet.add(`${e.timestamp.getFullYear()}:${e.source}`);
+      }
+      const yearPlatformHasData = (year: number, platform: Platform) =>
+        ypSet.has(`${year}:${platform}`);
+
       const yearFiltered = filterEventsByYear(allEvents, selectedYear);
       const aggregates = filterAggregatesByYear(allAggregates, selectedYear);
 
@@ -575,7 +597,9 @@ export function useDashboardData(): DashboardData {
         });
       }
 
-      setData({
+      // Shared dashboard data (without countryData — added async below)
+      const baseData = {
+        isDemo,
         stats: s,
         timelineData: computeTimelineData(events, s.effectiveRange),
         timelineAnnotations,
@@ -595,9 +619,19 @@ export function useDashboardData(): DashboardData {
         socialCircles,
         availableYears,
         availablePlatforms,
+        allPlatforms,
+        yearPlatformHasData,
         yearHints,
-      });
+      };
+
+      // Set data immediately with empty countryData, then resolve GeoIP async
+      setData({ ...baseData, countryData: [] });
       setLoading(false);
+
+      // Async: resolve country data (GeoIP DB fetched once and cached)
+      computeCountryDataWithGeoIp(events).then((countryData) => {
+        if (!cancelled) setData({ ...baseData, countryData });
+      }).catch(() => { /* GeoIP unavailable — map shows less data */ });
     }).catch(() => {
       if (!cancelled) setLoading(false);
     });

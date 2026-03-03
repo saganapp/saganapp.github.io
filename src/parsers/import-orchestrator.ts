@@ -73,7 +73,7 @@ export async function importFiles(
           prog.eventsProcessed,
           prog.currentFile,
         );
-      });
+      }, platformFiles);
 
       // Track stats for ImportSession
       let minDate: Date | null = null;
@@ -170,6 +170,7 @@ function getParserForPlatform(
     eventsProcessed: number;
     currentFile?: string;
   }) => void,
+  detectedFiles?: DetectedFile[],
 ): AsyncGenerator<ParseBatch> {
   switch (platform) {
     case "google":
@@ -183,7 +184,7 @@ function getParserForPlatform(
     case "tiktok":
       return parseTikTokExport(files, onProgress);
     case "whatsapp":
-      return parseWhatsAppExport(files, onProgress);
+      return parseWhatsAppExport(files, onProgress, detectedFiles);
     case "garmin":
       return parseGarminExport(files, onProgress);
     case "spotify":

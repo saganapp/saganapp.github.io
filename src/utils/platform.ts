@@ -26,7 +26,7 @@ export const PLATFORM_META: Record<Platform, PlatformMeta> = {
     icon: WhatsAppIcon,
     colorClass: "text-whatsapp",
     cssVar: "--platform-whatsapp",
-    signalLevel: 1,
+    signalLevel: 2,
     helpUrl: "https://faq.whatsapp.com/526463418847093",
   },
   instagram: {

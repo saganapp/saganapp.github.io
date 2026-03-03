@@ -1,4 +1,4 @@
-import { X, FileArchive, Mail, ChevronDown, AlertTriangle } from "lucide-react";
+import { X, FileArchive, Mail, ChevronDown, AlertTriangle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +18,7 @@ interface DetectedFileListProps {
   onRemove: (index: number) => void;
   onClear: () => void;
   onPlatformChange: (index: number, platform: Platform) => void;
+  onSenderSelect?: (index: number, sender: string) => void;
 }
 
 function formatSize(bytes: number): string {
@@ -33,6 +34,7 @@ export function DetectedFileList({
   onRemove,
   onClear,
   onPlatformChange,
+  onSenderSelect,
 }: DetectedFileListProps) {
   const { t } = useLocale();
 
@@ -128,6 +130,50 @@ export function DetectedFileList({
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Sender selector for WhatsApp chat exports */}
+              {df.chatExportSenders && df.chatExportSenders.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant={df.chatExportSelectedSender ? "secondary" : "outline"}
+                      size="sm"
+                      className={`shrink-0 gap-1.5 text-xs ${
+                        !df.chatExportSelectedSender
+                          ? "border-amber-500/50 text-amber-600 dark:text-amber-400"
+                          : ""
+                      }`}
+                    >
+                      {df.chatExportSelectedSender ? (
+                        <>
+                          <User className="h-3 w-3" />
+                          {df.chatExportSelectedSender}
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle className="h-3 w-3" />
+                          {t("import.chat.selectSender")}
+                        </>
+                      )}
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuRadioGroup
+                      value={df.chatExportSelectedSender ?? ""}
+                      onValueChange={(value) =>
+                        onSenderSelect?.(i, value)
+                      }
+                    >
+                      {df.chatExportSenders.map((sender) => (
+                        <DropdownMenuRadioItem key={sender} value={sender}>
+                          {sender}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
 
               <span className="text-xs text-muted-foreground uppercase">
                 {df.fileType}

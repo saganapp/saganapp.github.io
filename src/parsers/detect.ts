@@ -1,11 +1,13 @@
 import { unzip } from "fflate";
 import type { Platform, DetectedFile } from "./types";
+import { scanSenders } from "./whatsapp/chat-export";
 
 const GOOGLE_TAKEOUT_ZIP = /^takeout-\d{8}T\d{6}Z-\d+-\d+\.zip$/i;
 const TWITTER_ARCHIVE_ZIP = /^twitter-\d{4}-\d{2}-\d{2}-[a-f0-9]+\.zip$/i;
 const INSTAGRAM_ARCHIVE_ZIP = /^instagram-.*\.zip$/i;
 const TIKTOK_ARCHIVE_ZIP = /^TikTok_Data_\d+\.zip$/i;
 const SPOTIFY_ARCHIVE_ZIP = /^my_spotify_data\.zip$/i;
+const WHATSAPP_CHAT_EXPORT_ZIP = /^WhatsApp Chat with .+\.zip$/i;
 
 /** Tier 1: instant filename-based detection */
 function detectByFilename(file: File): DetectedFile | null {
@@ -25,6 +27,9 @@ function detectByFilename(file: File): DetectedFile | null {
   }
   if (SPOTIFY_ARCHIVE_ZIP.test(file.name)) {
     return { file, platform: "spotify", fileType: "zip", confidence: "filename" };
+  }
+  if (WHATSAPP_CHAT_EXPORT_ZIP.test(file.name)) {
+    return { file, platform: "whatsapp", fileType: "zip", confidence: "filename" };
   }
   if (name.endsWith(".mbox")) {
     return { file, platform: "google", fileType: "mbox", confidence: "filename" };
@@ -186,6 +191,29 @@ export async function detectFiles(files: File[]): Promise<DetectedFile[]> {
   }
 
   return detected;
+}
+
+/**
+ * Pre-scan a WhatsApp chat export zip to extract unique sender names.
+ * Used for the sender selection UI before import.
+ */
+export async function scanChatExportSenders(file: File): Promise<string[]> {
+  const buffer = await file.arrayBuffer();
+  const data = new Uint8Array(buffer);
+
+  return new Promise((resolve, reject) => {
+    unzip(data, (err, unzipped) => {
+      if (err) { reject(err); return; }
+      for (const key of Object.keys(unzipped)) {
+        if (key.endsWith(".txt")) {
+          const text = new TextDecoder().decode(unzipped[key]);
+          resolve(scanSenders(text));
+          return;
+        }
+      }
+      resolve([]);
+    });
+  });
 }
 
 // Re-export for testing
