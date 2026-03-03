@@ -149,8 +149,8 @@ export const es: Record<string, string> = {
     "Configuraci\u00f3n > Tu cuenta > Descargar un archivo de tus datos",
   "landing.export.twitter.format": "ZIP",
   "landing.export.whatsapp.steps":
-    "Ajustes > Cuenta > Solicitar info. de la cuenta",
-  "landing.export.whatsapp.format": "ZIP",
+    "Ajustes > Cuenta > Solicitar info. de la cuenta, o 'Exportar chat' desde cualquier conversación",
+  "landing.export.whatsapp.format": "ZIP / TXT",
   "landing.export.officialGuide": "Guía oficial",
   "landing.cases.source": "Fuente",
 
