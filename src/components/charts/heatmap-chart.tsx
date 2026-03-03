@@ -1,4 +1,4 @@
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, useMemo, Fragment } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocale } from "@/i18n";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,6 +40,25 @@ export function HeatmapChart({ data }: HeatmapChartProps) {
     1,
   );
 
+  // Find top 1-2 peak cells for star highlight
+  const topKeys = useMemo(() => {
+    const cells: { key: string; count: number }[] = [];
+    for (const row of data) {
+      for (const cell of row.data) {
+        if (cell.y > 0) cells.push({ key: `${row.id}-${cell.x}`, count: cell.y });
+      }
+    }
+    cells.sort((a, b) => b.count - a.count);
+    const keys = new Set<string>();
+    if (cells.length > 0) {
+      keys.add(cells[0].key);
+      if (cells.length > 1 && cells[1].count >= cells[0].count * 0.85) {
+        keys.add(cells[1].key);
+      }
+    }
+    return keys;
+  }, [data]);
+
   const handleCellEnter = (
     e: React.MouseEvent<HTMLDivElement>,
     day: string,
@@ -59,7 +78,7 @@ export function HeatmapChart({ data }: HeatmapChartProps) {
   };
 
   return (
-    <div ref={containerRef} className="relative h-full select-none">
+    <div ref={containerRef} className="relative h-full select-none overflow-hidden">
       <motion.div
         className="h-full"
         initial={{ opacity: 0 }}
@@ -69,7 +88,7 @@ export function HeatmapChart({ data }: HeatmapChartProps) {
         <div
           className="grid h-full gap-[2px]"
           style={{
-            gridTemplateColumns: `${isMobile ? "28px" : "36px"} repeat(24, 1fr)`,
+            gridTemplateColumns: `${isMobile ? "24px" : "36px"} repeat(24, 1fr)`,
             gridTemplateRows: `18px repeat(${data.length}, 1fr)`,
           }}
         >
@@ -96,15 +115,23 @@ export function HeatmapChart({ data }: HeatmapChartProps) {
               </div>
               {row.data.map((cell) => {
                 const intensity = cell.y / maxCount;
+                const cellKey = `${row.id}-${cell.x}`;
+                const isPeak = topKeys.has(cellKey);
                 return (
                   <div
-                    key={`${row.id}-${cell.x}`}
-                    className={`rounded-[3px] cursor-crosshair transition-transform duration-100 hover:z-10 hover:scale-[1.15] ${cellClass(intensity)}`}
+                    key={cellKey}
+                    className={`relative rounded-[3px] cursor-crosshair transition-transform duration-100 hover:z-10 hover:scale-[1.15] ${cellClass(intensity)}`}
                     onMouseEnter={(e) =>
                       handleCellEnter(e, row.id, Number(cell.x), cell.y)
                     }
                     onMouseLeave={() => setHover(null)}
-                  />
+                  >
+                    {isPeak && (
+                      <span className="absolute inset-0 flex items-center justify-center text-[8px] leading-none text-primary-foreground/80 drop-shadow-sm">
+                        ★
+                      </span>
+                    )}
+                  </div>
                 );
               })}
             </Fragment>

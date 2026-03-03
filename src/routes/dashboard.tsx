@@ -68,7 +68,7 @@ function formatTimeEstimate(seconds: number): string {
 export function DashboardPage() {
   usePageTitle("pageTitle.dashboard");
   const {
-    loading: dataLoading, stats, timelineData, heatmapData, activityBreakdown, inferences,
+    loading: dataLoading, stats, timelineData, timelineAnnotations, heatmapData, activityBreakdown, inferences,
     contactRankings, nightContacts, weekendContacts, devices, deviceTimeline,
     workHoursAnalysis, lulls, sleepPatterns, availableYears, availablePlatforms, yearHints,
   } = useDashboardData();
@@ -135,7 +135,7 @@ export function DashboardPage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-3 sm:px-4 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -248,7 +248,7 @@ export function DashboardPage() {
               <CardHeader className="pb-1">
                 <CardDescription>{s.label}</CardDescription>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-lg sm:text-xl font-bold tracking-tight font-mono">
+                  <span className="text-lg sm:text-xl font-bold tracking-tight font-mono break-words">
                     {loading ? "\u2014" : s.value}
                   </span>
                 </div>
@@ -284,7 +284,10 @@ export function DashboardPage() {
                 <CardTitle className="text-base">{t("dashboard.timeline.title")}</CardTitle>
                 {demoMode && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 text-muted-foreground">{t("demo.badge")}</Badge>}
               </div>
-              <CardDescription>{t("dashboard.timeline.desc")}</CardDescription>
+              <CardDescription>
+                {t("dashboard.timeline.desc")}
+                <span className="ml-1.5 text-muted-foreground/50">{t("chart.hint.desktop")}</span>
+              </CardDescription>
               {timelineNote && (
                 <p className="text-xs text-muted-foreground mt-1">{timelineNote}</p>
               )}
@@ -292,7 +295,7 @@ export function DashboardPage() {
             <CardContent>
               <ErrorBoundary compact>
                 <ChartContainer height={300} mobileHeight={220} loading={loading} empty={!hasData} label={t("dashboard.timeline.title")}>
-                  <TimelineChart data={timelineData} effectiveRange={stats.effectiveRange} />
+                  <TimelineChart data={timelineData} effectiveRange={stats.effectiveRange} annotations={timelineAnnotations} />
                 </ChartContainer>
               </ErrorBoundary>
             </CardContent>
@@ -384,7 +387,7 @@ export function DashboardPage() {
             <CardContent>
               {loading ? (
                 <div className="space-y-3">
-                  <div className="grid gap-px" style={{ gridTemplateColumns: `auto repeat(14, 1fr)`, minWidth: 260 }}>
+                  <div className="grid gap-px" style={{ gridTemplateColumns: `auto repeat(14, 1fr)` }}>
                     <div />
                     {Array.from({ length: 14 }, (_, i) => (
                       <Skeleton key={`h-${i}`} className="h-3 w-full" />

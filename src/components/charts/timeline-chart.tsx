@@ -6,7 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { usePlatformColors } from "@/hooks/use-platform-colors";
 import { PLATFORM_META } from "@/utils/platform";
 import { formatCompact } from "@/utils/format";
-import type { TimelineSeries } from "@/hooks/use-dashboard-data";
+import type { TimelineSeries, TimelineAnnotation } from "@/hooks/use-dashboard-data";
 import type { Platform } from "@/parsers/types";
 
 // Map display names back to platform keys for color lookup
@@ -17,6 +17,7 @@ const nameToKey = Object.fromEntries(
 interface TimelineChartProps {
   data: TimelineSeries[];
   effectiveRange?: { start: Date; end: Date } | null;
+  annotations?: TimelineAnnotation[];
 }
 
 /* ─── Hook: track container dimensions via ResizeObserver ─── */
@@ -57,7 +58,7 @@ interface Computed {
 }
 
 /* ─────────────────────────────────────────────────────────── */
-export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
+export function TimelineChart({ data, effectiveRange, annotations }: TimelineChartProps) {
   const { t } = useLocale();
   const isMobile = useIsMobile();
   const colors = usePlatformColors();
@@ -72,9 +73,10 @@ export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
   } | null>(null);
   const lastPinchRef = useRef<{ dist: number; center: number } | null>(null);
 
+  const hasAnnotations = (annotations?.length ?? 0) > 0;
   const margin = useMemo(
-    () => ({ top: 12, right: 16, bottom: 32, left: isMobile ? 36 : 50 }),
-    [isMobile],
+    () => ({ top: hasAnnotations ? 28 : 12, right: 16, bottom: 32, left: isMobile ? 36 : 50 }),
+    [isMobile, hasAnnotations],
   );
   const innerW = cw - margin.left - margin.right;
   const innerH = ch - margin.top - margin.bottom;
@@ -117,13 +119,24 @@ export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
       return row;
     });
 
+    // Custom offset: overlapping areas (each layer starts from y=0)
+    const stackOffsetOverlap = (series: d3.Series<Record<string, number | Date>, string>[]) => {
+      for (const s of series) {
+        for (const d of s) {
+          const val = d[1] - d[0];
+          d[0] = 0;
+          d[1] = val;
+        }
+      }
+    };
+
     // Stack layout
     const stacked = d3
       .stack<Record<string, number | Date>, string>()
       .keys(seriesKeys)
       .value((d, key) => (d[key] as number) ?? 0)
       .order(d3.stackOrderNone)
-      .offset(d3.stackOffsetNone)(table);
+      .offset(stackOffsetOverlap)(table);
 
     // Scales
     const fullDomain: [Date, Date] = effectiveRange
@@ -485,6 +498,16 @@ export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
 
   return (
     <div ref={containerRef} className="relative h-full w-full touch-none select-none">
+      {/* ─── Legend above chart ─── */}
+      {hasAnnotations && (
+        <div className="absolute top-0 left-0 right-0 z-10 flex items-center px-2 py-px">
+          <span className="flex items-center gap-1.5 text-[9px] text-muted-foreground">
+            <span className="inline-block h-[6px] w-[6px] rounded-full bg-foreground" />
+            {t("chart.legend.quietDot")}
+          </span>
+        </div>
+      )}
+
       {/* Chart — revealed with a left-to-right clip sweep */}
       <motion.div
         className="h-full w-full"
@@ -510,8 +533,8 @@ export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor={color} stopOpacity={0.55} />
-                  <stop offset="100%" stopColor={color} stopOpacity={0.06} />
+                  <stop offset="0%" stopColor={color} stopOpacity={0.25} />
+                  <stop offset="100%" stopColor={color} stopOpacity={0.03} />
                 </linearGradient>
               );
             })}
@@ -572,6 +595,25 @@ export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
               );
             })}
 
+            {/* ─── Annotation lines (inside clip) ─── */}
+            {annotations?.map((ann) => {
+              const x = xScale(ann.date);
+              if (x < 0 || x > innerW) return null;
+              return (
+                <line
+                  key={`ann-${ann.date.getTime()}`}
+                  x1={x}
+                  x2={x}
+                  y1={0}
+                  y2={innerH}
+                  stroke="currentColor"
+                  strokeOpacity={0.35}
+                  strokeWidth={1}
+                  strokeDasharray="4 3"
+                />
+              );
+            })}
+
             {/* ─── Hover crosshair + dots ─── */}
             {hoverIndex !== null && tooltipData && (
               <g>
@@ -605,6 +647,46 @@ export function TimelineChart({ data, effectiveRange }: TimelineChartProps) {
               </g>
             )}
             </g>
+
+            {/* ─── Annotation labels / dots (outside clip, inside margin transform) ─── */}
+            {(() => {
+              if (!annotations || annotations.length === 0) return null;
+              const MIN_LABEL_GAP = 70; // px – labels closer than this become dots
+              const positioned = annotations
+                .map((ann) => ({ ...ann, x: xScale(ann.date) }))
+                .filter((a) => a.x >= 0 && a.x <= innerW)
+                .sort((a, b) => a.x - b.x);
+
+              // Decide label vs dot: label shown only when gap to next is ≥ MIN_LABEL_GAP
+              const showLabel: boolean[] = positioned.map((_, i) => {
+                if (i < positioned.length - 1 && positioned[i + 1].x - positioned[i].x < MIN_LABEL_GAP) return false;
+                if (i > 0 && positioned[i].x - positioned[i - 1].x < MIN_LABEL_GAP) return false;
+                return true;
+              });
+
+              return positioned.map((ann, i) =>
+                showLabel[i] ? (
+                  <text
+                    key={`ann-label-${ann.date.getTime()}`}
+                    x={ann.x}
+                    y={-4}
+                    textAnchor="middle"
+                    className="fill-muted-foreground"
+                    style={{ fontSize: 9 }}
+                  >
+                    {ann.label}
+                  </text>
+                ) : (
+                  <circle
+                    key={`ann-dot-${ann.date.getTime()}`}
+                    cx={ann.x}
+                    cy={-4}
+                    r={3}
+                    className="fill-foreground"
+                  />
+                ),
+              );
+            })()}
 
             {/* ─── X-axis labels ─── */}
             {xTicks.map((tick) => (

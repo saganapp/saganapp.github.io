@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import type { Platform, EventType } from "@/parsers/types";
+import { getDatabaseStats } from "@/store/db";
 
 interface ImportProgress {
-  phase: "reading" | "extracting" | "parsing" | "storing" | "complete" | "error";
+  phase: "reading" | "extracting" | "parsing" | "storing" | "complete" | "error" | "warning";
   progress: number;
   eventsProcessed: number;
   currentFile?: string;
@@ -39,6 +40,7 @@ interface AppState {
 
   dataSummary: DataSummary;
   setDataSummary: (summary: DataSummary) => void;
+  hydrateDataSummary: () => Promise<void>;
 
   selectedYear: number | null;
   setSelectedYear: (year: number | null) => void;
@@ -84,6 +86,10 @@ export const useAppStore = create<AppState>((set) => ({
 
   dataSummary: { totalEvents: 0, platformCounts: {} },
   setDataSummary: (summary) => set({ dataSummary: summary }),
+  hydrateDataSummary: async () => {
+    const stats = await getDatabaseStats();
+    set({ dataSummary: { totalEvents: stats.totalEvents, platformCounts: stats.platformCounts } });
+  },
 
   selectedYear: null,
   setSelectedYear: (year) => set({ selectedYear: year }),

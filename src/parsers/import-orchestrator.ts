@@ -15,7 +15,7 @@ import { clearDemoCache } from "@/demo/load-demo";
 interface ImportCallbacks {
   onProgress: (
     platform: Platform,
-    phase: "reading" | "extracting" | "parsing" | "storing" | "complete" | "error",
+    phase: "reading" | "extracting" | "parsing" | "storing" | "complete" | "error" | "warning",
     progress: number,
     eventsProcessed: number,
     currentFile?: string,
@@ -138,7 +138,11 @@ export async function importFiles(
         await addImportSession(session);
       }
 
-      callbacks.onProgress(platform, "complete", 1, platformEventCount);
+      if (platformEventCount + totalAggregateCount === 0) {
+        callbacks.onProgress(platform, "warning", 1, 0);
+      } else {
+        callbacks.onProgress(platform, "complete", 1, platformEventCount);
+      }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unknown import error";

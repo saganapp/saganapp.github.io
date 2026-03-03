@@ -1,10 +1,10 @@
-import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { PLATFORM_META } from "@/utils/platform";
 import { useLocale } from "@/i18n";
 import type { Platform } from "@/parsers/types";
 
 interface PlatformProgress {
-  phase: "reading" | "extracting" | "parsing" | "storing" | "complete" | "error";
+  phase: "reading" | "extracting" | "parsing" | "storing" | "complete" | "error" | "warning";
   progress: number;
   eventsProcessed: number;
   currentFile?: string;
@@ -27,6 +27,7 @@ export function ImportProgress({ activeImports }: ImportProgressProps) {
         const Icon = meta.icon;
         const isComplete = progress.phase === "complete";
         const isError = progress.phase === "error";
+        const isWarning = progress.phase === "warning";
 
         return (
           <div
@@ -42,10 +43,13 @@ export function ImportProgress({ activeImports }: ImportProgressProps) {
               {isComplete && (
                 <CheckCircle2 className="ml-auto h-4 w-4 text-green-500" />
               )}
+              {isWarning && (
+                <AlertTriangle className="ml-auto h-4 w-4 text-amber-500" />
+              )}
               {isError && (
                 <AlertCircle className="ml-auto h-4 w-4 text-destructive" />
               )}
-              {!isComplete && !isError && (
+              {!isComplete && !isError && !isWarning && (
                 <Loader2 className="ml-auto h-4 w-4 animate-spin text-muted-foreground" />
               )}
             </div>
@@ -58,9 +62,11 @@ export function ImportProgress({ activeImports }: ImportProgressProps) {
                   width: `${Math.round(progress.progress * 100)}%`,
                   backgroundColor: isError
                     ? "var(--destructive)"
-                    : isComplete
-                      ? "var(--color-green-500, #22c55e)"
-                      : `var(${meta.cssVar})`,
+                    : isWarning
+                      ? "var(--color-amber-500, #f59e0b)"
+                      : isComplete
+                        ? "var(--color-green-500, #22c55e)"
+                        : `var(${meta.cssVar})`,
                 }}
               />
             </div>

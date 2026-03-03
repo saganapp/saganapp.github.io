@@ -20,7 +20,7 @@ export function ActivityBarChart({ data }: ActivityBarChartProps) {
   if (data.length === 0) return null;
 
   const maxCount = Math.max(...data.map((d) => d.count), 1);
-  const labelW = isMobile ? 76 : 100;
+  const labelW = isMobile ? 64 : 100;
 
   return (
     <div className="flex h-full flex-col justify-center gap-[6px]">

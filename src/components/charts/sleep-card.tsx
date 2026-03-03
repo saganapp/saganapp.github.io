@@ -130,15 +130,15 @@ export function SleepCard({ patterns }: SleepCardProps) {
             key={idx}
             className="rounded-lg border border-border/50 px-3 py-2"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">
+            <div className="flex items-center justify-between min-w-0 gap-2">
+              <span className="text-sm font-medium truncate">
                 {t("dashboard.sleep.item", {
                   days,
                   startHour: pat.startHour,
                   endHour: pat.endHour,
                 })}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground shrink-0">
                 {t("dashboard.sleep.confidence", {
                   pct,
                   weeks: pat.weekCount,

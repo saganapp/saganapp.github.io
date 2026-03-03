@@ -39,13 +39,13 @@ export function LullCard({ lulls }: LullCardProps) {
   return (
     <div className="space-y-3">
       {/* Mini heatmap grid */}
-      <div className="overflow-x-auto">
+      <div className="overflow-hidden">
         <div
           className="grid gap-px"
           style={{
             gridTemplateColumns: `auto repeat(${HOURS.length}, 1fr)`,
             gridTemplateRows: `auto repeat(${DAYS.length}, 1fr)`,
-            minWidth: 260,
+            minWidth: 0,
           }}
         >
           {/* Top-left corner */}
@@ -117,15 +117,15 @@ export function LullCard({ lulls }: LullCardProps) {
             key={idx}
             className="rounded-lg border border-border/50 px-3 py-2"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">
+            <div className="flex items-center justify-between min-w-0 gap-2">
+              <span className="text-sm font-medium truncate">
                 {t("dashboard.lulls.item", {
                   days,
                   startHour: lull.startHour,
                   endHour: lull.endHour,
                 })}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground shrink-0">
                 {t("dashboard.lulls.confidence", {
                   pct,
                   weeks: lull.weekCount,

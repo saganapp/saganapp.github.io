@@ -427,9 +427,9 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
     });
   }
 
-  // Phase 10: Work-hours social media injection (~100 Instagram events during Mon-Fri 9-17)
+  // Phase 10: Work-hours social media injection (~200 Instagram events during Mon-Fri 9-17)
   const workRand = mulberry32(seed + 111);
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 200; i++) {
     const dayMs = startMs + workRand() * (endMs - startMs);
     const day = new Date(dayMs);
     const dow = day.getDay();
@@ -521,7 +521,7 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
 
   // Phase 12: Work-Hours Background Listening — Spotify during weekday 9-17
   const workListenRand = mulberry32(seed + 770);
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 500; i++) {
     const dayMs = startMs + workListenRand() * (endMs - startMs);
     const day = new Date(dayMs);
     const dow = day.getDay();
@@ -559,9 +559,9 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
         albumName: albumEntry.album,
         trackName: track,
         contentName: track,
-        msPlayed: 30_000 + Math.floor(workListenRand() * 270_000),
+        msPlayed: 600_000 + Math.floor(workListenRand() * 1_500_000), // 10-35 min, avg ~22 min
         connCountry: "ES",
-        skipped: workListenRand() < 0.15,
+        skipped: workListenRand() < 0.05,
         shuffle: workListenRand() < 0.60,
         incognitoMode: false,
         offline: false,
@@ -569,10 +569,156 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
     });
   }
 
-  // Sort by timestamp
-  finalEvents.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  // Phase 12a: TikTok work-hours browsing (100 events during Mon-Fri 9-17)
+  const workTikTokRand = mulberry32(seed + 780);
+  for (let i = 0; i < 100; i++) {
+    const dayMs = startMs + workTikTokRand() * (endMs - startMs);
+    const day = new Date(dayMs);
+    const dow = day.getDay();
+    if (dow === 0 || dow === 6) { i--; continue; }
 
-  return finalEvents;
+    let hour = 9 + Math.floor(workTikTokRand() * 7);
+    if (hour >= 12) hour++;
+    const minute = Math.floor(workTikTokRand() * 60);
+    const timestamp = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour, minute, Math.floor(workTikTokRand() * 60));
+
+    const prefix = "ti";
+    counters[prefix] = (counters[prefix] ?? 0) + 1;
+    const id = `demo-${prefix}-${String(counters[prefix]).padStart(4, "0")}`;
+    const evtType: EventType = workTikTokRand() < 0.6 ? "browsing" : "story_view";
+    const device = getDevice(timestamp, startMs, endMs, "tiktok", workTikTokRand);
+
+    finalEvents.push({
+      id,
+      source: "tiktok",
+      eventType: evtType,
+      timestamp,
+      actor: "You",
+      participants: [],
+      metadata: { device },
+    });
+  }
+
+  // Phase 12b: Telegram work-hours messages (80 events during Mon-Fri 9-17)
+  const workTelegramRand = mulberry32(seed + 790);
+  const telegramContacts = DEMO_CONTACTS.filter((c) => c.platforms.includes("telegram"));
+  for (let i = 0; i < 80; i++) {
+    const dayMs = startMs + workTelegramRand() * (endMs - startMs);
+    const day = new Date(dayMs);
+    const dow = day.getDay();
+    if (dow === 0 || dow === 6) { i--; continue; }
+
+    let hour = 9 + Math.floor(workTelegramRand() * 7);
+    if (hour >= 12) hour++;
+    const minute = Math.floor(workTelegramRand() * 60);
+    const timestamp = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour, minute, Math.floor(workTelegramRand() * 60));
+
+    const prefix = "te";
+    counters[prefix] = (counters[prefix] ?? 0) + 1;
+    const id = `demo-${prefix}-${String(counters[prefix]).padStart(4, "0")}`;
+    const evtType: EventType = workTelegramRand() < 0.7 ? "message_sent" : "reaction";
+    const contact = telegramContacts[Math.floor(workTelegramRand() * telegramContacts.length)];
+    const device = getDevice(timestamp, startMs, endMs, "telegram", workTelegramRand);
+
+    finalEvents.push({
+      id,
+      source: "telegram",
+      eventType: evtType,
+      timestamp,
+      actor: "You",
+      participants: [contact.name],
+      metadata: { device },
+    });
+  }
+
+  // Phase 12c: Three quiet-period windows (12–18h of near-silence)
+  const quietPeriodRand = mulberry32(seed + 1200);
+  const quietWindows: { start: Date; endExclusive: Date }[] = [
+    // 1) Sat Jun 15 2024 06:00 – Sun Jun 16 00:00 (18h)
+    { start: new Date(2024, 5, 15, 6, 0), endExclusive: new Date(2024, 5, 16, 0, 0) },
+    // 2) Tue Mar 18 2025 07:00 – Wed Mar 19 01:00 (18h)
+    { start: new Date(2025, 2, 18, 7, 0), endExclusive: new Date(2025, 2, 19, 1, 0) },
+  ];
+  const afterQuietPeriods = finalEvents.filter((e) => {
+    const ts = e.timestamp.getTime();
+    for (const w of quietWindows) {
+      if (ts >= w.start.getTime() && ts < w.endExclusive.getTime()) {
+        return quietPeriodRand() < 0.03; // keep only ~3%
+      }
+    }
+    return true;
+  });
+
+  // Phase 13: Recurring quiet periods — Tue/Thu 17:00 and Fri 21:00
+  const quietRand = mulberry32(seed + 1300);
+  const afterQuiet = afterQuietPeriods.filter((e) => {
+    const dow = e.timestamp.getDay();
+    const hour = e.timestamp.getHours();
+    // Tue (2) + Thu (4), hour 17: keep only 10%
+    if ((dow === 2 || dow === 4) && hour === 17) {
+      return quietRand() < 0.10;
+    }
+    // Fri (5), hour 21: keep only 30%
+    if (dow === 5 && hour === 21) {
+      return quietRand() < 0.30;
+    }
+    return true;
+  });
+
+  // Phase 14: Fill zero-count days with 1–2 filler events so only the intentional
+  // quiet windows (Phase 12c) register as quiet periods in the analysis.
+  const quietDateKeys = new Set<string>();
+  for (const w of quietWindows) {
+    const c = new Date(w.start);
+    while (c < w.endExclusive) {
+      quietDateKeys.add(getDateKey(c));
+      c.setDate(c.getDate() + 1);
+    }
+  }
+
+  const fillerDayCounts = new Map<string, number>();
+  for (const e of afterQuiet) {
+    const k = getDateKey(e.timestamp);
+    fillerDayCounts.set(k, (fillerDayCounts.get(k) ?? 0) + 1);
+  }
+
+  const fillerRand = mulberry32(seed + 1400);
+  const fillerCursor = new Date(startDate);
+  fillerCursor.setHours(12, 0, 0, 0);
+  while (fillerCursor <= endDate) {
+    const k = getDateKey(fillerCursor);
+    if (!quietDateKeys.has(k) && (fillerDayCounts.get(k) ?? 0) === 0) {
+      // Inject 2 filler events at reasonable hours
+      const y = fillerCursor.getFullYear();
+      const m = fillerCursor.getMonth();
+      const d = fillerCursor.getDate();
+      for (let j = 0; j < 2; j++) {
+        const hour = 9 + Math.floor(fillerRand() * 10); // 9-18
+        const minute = Math.floor(fillerRand() * 60);
+        const timestamp = new Date(y, m, d, hour, minute, Math.floor(fillerRand() * 60));
+        const platform: Platform = fillerRand() < 0.5 ? "telegram" : "google";
+        const prefix = platform.slice(0, 2);
+        counters[prefix] = (counters[prefix] ?? 0) + 1;
+        const id = `demo-${prefix}-${String(counters[prefix]).padStart(4, "0")}`;
+        const device = getDevice(timestamp, startMs, endMs, platform, fillerRand);
+        afterQuiet.push({
+          id,
+          source: platform,
+          eventType: "message_sent",
+          timestamp,
+          actor: "You",
+          participants: ["Alex Chen"],
+          metadata: { device },
+        });
+      }
+    }
+    fillerCursor.setDate(fillerCursor.getDate() + 1);
+  }
+
+  // Sort by timestamp
+  afterQuiet.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+  return afterQuiet;
 }
 
 function generateSingleEvent(

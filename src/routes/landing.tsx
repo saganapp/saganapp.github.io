@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { motion } from "framer-motion";
+import { TileReveal } from "@/components/landing/tile-reveal";
 import {
   Shield,
   Eye,
@@ -75,6 +76,7 @@ export function LandingPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
+      <TileReveal />
       {/* A) Hero */}
       <motion.section
         className="flex flex-col items-center gap-5 pb-10 pt-12 text-center md:pt-16"

@@ -27,7 +27,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return (localStorage.getItem("sagan-theme") as Theme) ?? "system";
   });
 
-  const resolved = theme === "system" ? getSystemTheme() : theme;
+  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(getSystemTheme);
+
+  const resolved = theme === "system" ? systemTheme : theme;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -35,17 +37,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.classList.add(resolved);
   }, [resolved]);
 
+  // Keep systemTheme in sync with OS preference (always listen, so switching
+  // back to "system" mode picks up any changes that happened while overridden)
   useEffect(() => {
-    if (theme !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      const root = document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(getSystemTheme());
-    };
+    const handler = () => setSystemTheme(mq.matches ? "dark" : "light");
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
-  }, [theme]);
+  }, []);
 
   const setTheme = (next: Theme) => {
     localStorage.setItem("sagan-theme", next);

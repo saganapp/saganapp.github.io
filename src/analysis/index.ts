@@ -19,7 +19,10 @@ export {
   computeMusicWindDown,
   computeSoundtrackToSilence,
   computeWorkListening,
+  computeQuietPeriods,
+  computeQuietPeriodsInference,
 } from "./cross-platform";
+export type { QuietPeriod } from "./cross-platform";
 export {
   computeReciprocity,
   computeRelationshipTrends,

@@ -1,5 +1,6 @@
 import type { MetadataEvent, EventType, Platform } from "@/parsers/types";
 import type { InferenceCard, DashboardStats } from "@/hooks/use-dashboard-data";
+import type { SleepingPattern } from "./sleep";
 import { PLATFORM_META } from "@/utils/platform";
 import { getDateKey } from "@/utils/time";
 
@@ -789,5 +790,146 @@ export function computeConsumptionCreationRatio(events: MetadataEvent[]): Infere
     descKey: "inference.consumptionCreation.desc",
     descParams: { total, consumeCount, createCount },
     privacyKey: "inference.consumptionCreation.privacy",
+  };
+}
+
+export interface QuietPeriod {
+  start: Date;
+  durationHours: number;
+}
+
+/**
+ * Detect isolated quiet days — single days with near-zero activity surrounded
+ * by normal days, excluding multi-day silences (vacations) already caught by
+ * computeActivityGaps. Uses daily-resolution counts for stability.
+ */
+export function computeQuietPeriods(
+  events: MetadataEvent[],
+  stats: DashboardStats,
+  _sleepPatterns: SleepingPattern[],
+): QuietPeriod[] {
+  if (!stats.effectiveRange || events.length < 50) return [];
+
+  // Step 1: Build daily counts
+  const dailyCounts = new Map<string, number>();
+  for (const e of events) {
+    const key = getDateKey(e.timestamp);
+    dailyCounts.set(key, (dailyCounts.get(key) ?? 0) + 1);
+  }
+
+  const start = new Date(stats.effectiveRange.start);
+  const end = new Date(stats.effectiveRange.end);
+  const allDays: { key: string; count: number }[] = [];
+  const cursor = new Date(start);
+  cursor.setHours(12, 0, 0, 0);
+  while (cursor <= end) {
+    const key = getDateKey(cursor);
+    allDays.push({ key, count: dailyCounts.get(key) ?? 0 });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  if (allDays.length < 14) return [];
+
+  // Step 2: Compute median daily count
+  const sorted = allDays.map((d) => d.count).sort((a, b) => a - b);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  if (median === 0) return [];
+
+  // Step 3: Mark days as "low" (< 10% of median)
+  const lowThreshold = median * 0.10;
+  const isLow = allDays.map((d) => d.count < lowThreshold);
+
+  // Step 4: Find runs of consecutive low days and classify them
+  // - Runs of 3+ days → vacation/illness gaps (handled by computeActivityGaps)
+  // - Runs of 1-2 days → candidate quiet periods
+  const candidates: number[] = []; // indices into allDays
+
+  let runStartIdx = -1;
+  for (let i = 0; i <= allDays.length; i++) {
+    if (i < allDays.length && isLow[i]) {
+      if (runStartIdx === -1) runStartIdx = i;
+    } else if (runStartIdx !== -1) {
+      const runLen = i - runStartIdx;
+      if (runLen <= 2) {
+        // Short isolated silence — candidate quiet period
+        for (let j = runStartIdx; j < i; j++) candidates.push(j);
+      }
+      // Runs of 3+ are vacation gaps — skip
+      runStartIdx = -1;
+    }
+  }
+
+  // Step 5: For each candidate, verify surrounding days are normal (≥ 50% of median)
+  const surroundThreshold = median * 0.5;
+  const periods: QuietPeriod[] = [];
+
+  // Deduplicate: process consecutive candidate pairs as one period
+  const used = new Set<number>();
+  for (const idx of candidates) {
+    if (used.has(idx)) continue;
+    if (idx < 2 || idx >= allDays.length - 2) continue;
+
+    // Check if this is a 2-day quiet period
+    const isTwo = candidates.includes(idx + 1) && !used.has(idx + 1);
+    const endIdx = isTwo ? idx + 1 : idx;
+
+    // Verify surrounding 2 days on each side are normal
+    const prevOk = allDays[idx - 1].count >= surroundThreshold
+      && allDays[idx - 2].count >= surroundThreshold;
+    const nextOk = allDays[endIdx + 1].count >= surroundThreshold
+      && allDays[endIdx + 2].count >= surroundThreshold;
+
+    if (prevOk && nextOk) {
+      const durationHours = isTwo ? 30 : 18;
+      const [y, m, d] = allDays[idx].key.split("-").map(Number);
+      periods.push({
+        start: new Date(y, m - 1, d, 6, 0),
+        durationHours,
+      });
+      used.add(idx);
+      if (isTwo) used.add(idx + 1);
+    }
+  }
+
+  // Sort by duration descending
+  periods.sort((a, b) => b.durationHours - a.durationHours);
+
+  return periods;
+}
+
+/**
+ * Build an InferenceCard from quiet-period detection results.
+ */
+export function computeQuietPeriodsInference(
+  events: MetadataEvent[],
+  stats: DashboardStats,
+  sleepPatterns: SleepingPattern[],
+): InferenceCard | null {
+  const periods = computeQuietPeriods(events, stats, sleepPatterns);
+  if (periods.length === 0) return null;
+
+  const top3 = periods.slice(0, 3);
+  const fmt = (d: Date) => getDateKey(d);
+
+  const descParams: Record<string, string | number> = { count: periods.length };
+  for (let i = 0; i < 3; i++) {
+    const idx = i + 1;
+    if (top3[i]) {
+      descParams[`hours${idx}`] = top3[i].durationHours;
+      descParams[`date${idx}`] = fmt(top3[i].start);
+    } else {
+      descParams[`hours${idx}`] = "";
+      descParams[`date${idx}`] = "";
+    }
+  }
+
+  return {
+    id: "quiet-periods",
+    icon: "pause",
+    titleKey: "inference.quietPeriods.title",
+    titleParams: { count: periods.length },
+    descKey: "inference.quietPeriods.desc",
+    descParams,
+    privacyKey: "inference.quietPeriods.privacy",
   };
 }

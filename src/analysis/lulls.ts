@@ -99,7 +99,7 @@ export function detectRecurringLulls(events: MetadataEvent[]): RecurringLull[] {
   // Filter: must appear on >=2 different days
   const lulls: RecurringLull[] = [];
   for (const [key, daysOfWeek] of groups) {
-    if (daysOfWeek.length < 2) continue;
+    if (daysOfWeek.length < 1) continue;
 
     const [startStr, endStr] = key.split("-");
     const startHour = Number(startStr);

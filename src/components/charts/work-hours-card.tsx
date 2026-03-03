@@ -18,6 +18,8 @@ export function WorkHoursCard({ analysis }: WorkHoursCardProps) {
 
   const totalHours = (analysis.totalSeconds / 3600).toFixed(1);
 
+  const COMPATIBLE_PLATFORMS = new Set<Platform>(["spotify", "garmin"]);
+
   const platformEntries = PLATFORMS
     .filter((p) => (analysis.byPlatform[p] ?? 0) > 0)
     .map((p) => ({
@@ -26,7 +28,11 @@ export function WorkHoursCard({ analysis }: WorkHoursCardProps) {
     }))
     .sort((a, b) => b.seconds - a.seconds);
 
-  const maxSeconds = platformEntries.length > 0 ? platformEntries[0].seconds : 1;
+  const incompatible = platformEntries.filter((e) => !COMPATIBLE_PLATFORMS.has(e.platform));
+  const compatible = platformEntries.filter((e) => COMPATIBLE_PLATFORMS.has(e.platform));
+
+  const incompatibleMax = incompatible.length > 0 ? incompatible[0].seconds : 1;
+  const compatibleMax = compatible.length > 0 ? compatible[0].seconds : 1;
 
   const stats = [
     {
@@ -66,39 +72,81 @@ export function WorkHoursCard({ analysis }: WorkHoursCardProps) {
       </div>
 
       {/* Platform breakdown bars */}
-      <div className="space-y-2.5">
-        {platformEntries.map(({ platform, seconds }, idx) => {
-          const meta = PLATFORM_META[platform as Platform];
-          const pct = Math.round((seconds / maxSeconds) * 100);
-          const minutes = Math.round(seconds / 60);
-          return (
-            <div key={platform} className="flex items-center gap-2.5">
-              <div className="flex w-20 shrink-0 items-center gap-1.5">
-                <meta.icon
-                  className="h-3.5 w-3.5 shrink-0"
-                  style={{ color: `var(--platform-${platform})` }}
-                />
-                <span className="truncate text-xs">{meta.name}</span>
-              </div>
-              <div className="h-5 flex-1 overflow-hidden rounded-md bg-muted/20">
-                <motion.div
-                  className="h-full rounded-md"
-                  style={{ backgroundColor: `var(--platform-${platform})` }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{
-                    duration: 0.8,
-                    delay: 0.2 + idx * 0.08,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                />
-              </div>
-              <span className="w-10 shrink-0 text-right text-[11px] font-mono tabular-nums text-muted-foreground">
-                {minutes}m
-              </span>
-            </div>
-          );
-        })}
+      <div className="space-y-4">
+        {incompatible.length > 0 && (
+          <div className="space-y-2.5">
+            <p className="text-[11px] font-medium text-destructive/70">{t("dashboard.workHours.incompatible")}</p>
+            {incompatible.map(({ platform, seconds }, idx) => {
+              const meta = PLATFORM_META[platform as Platform];
+              const pct = Math.round((seconds / incompatibleMax) * 100);
+              const minutes = Math.round(seconds / 60);
+              return (
+                <div key={platform} className="flex items-center gap-2.5">
+                  <div className="flex w-16 sm:w-20 shrink-0 items-center gap-1.5">
+                    <meta.icon
+                      className="h-3.5 w-3.5 shrink-0"
+                      style={{ color: `var(--platform-${platform})` }}
+                    />
+                    <span className="truncate text-xs">{meta.name}</span>
+                  </div>
+                  <div className="h-5 flex-1 overflow-hidden rounded-md bg-muted/20">
+                    <motion.div
+                      className="h-full rounded-md"
+                      style={{ backgroundColor: `var(--platform-${platform})` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.2 + idx * 0.08,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                    />
+                  </div>
+                  <span className="w-10 shrink-0 text-right text-[11px] font-mono tabular-nums text-muted-foreground">
+                    {minutes}m
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {compatible.length > 0 && (
+          <div className="space-y-2.5">
+            <p className="text-[11px] font-medium text-muted-foreground">{t("dashboard.workHours.compatible")}</p>
+            {compatible.map(({ platform, seconds }, idx) => {
+              const meta = PLATFORM_META[platform as Platform];
+              const pct = Math.round((seconds / compatibleMax) * 100);
+              const minutes = Math.round(seconds / 60);
+              return (
+                <div key={platform} className="flex items-center gap-2.5">
+                  <div className="flex w-16 sm:w-20 shrink-0 items-center gap-1.5">
+                    <meta.icon
+                      className="h-3.5 w-3.5 shrink-0"
+                      style={{ color: `var(--platform-${platform})` }}
+                    />
+                    <span className="truncate text-xs">{meta.name}</span>
+                  </div>
+                  <div className="h-5 flex-1 overflow-hidden rounded-md bg-muted/20">
+                    <motion.div
+                      className="h-full rounded-md"
+                      style={{ backgroundColor: `var(--platform-${platform})` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{
+                        duration: 0.8,
+                        delay: 0.2 + (incompatible.length + idx) * 0.08,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                    />
+                  </div>
+                  <span className="w-10 shrink-0 text-right text-[11px] font-mono tabular-nums text-muted-foreground">
+                    {minutes}m
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

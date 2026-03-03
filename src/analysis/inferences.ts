@@ -1,11 +1,12 @@
 import type { MetadataEvent, Platform } from "@/parsers/types";
-import { EVENT_DURATION_SECONDS } from "@/parsers/types";
+import { estimateEventDuration } from "./duration";
 import { PLATFORM_META } from "@/utils/platform";
 import type { InferenceCard, DashboardStats } from "@/hooks/use-dashboard-data";
 import { filterUserTriggered } from "./filters";
 import { extractDevices } from "./devices";
 import { detectMacroEvents } from "./macro-events";
 import { detectRecurringLulls } from "./lulls";
+import { detectSleepingPatterns } from "./sleep";
 import {
   computeActivityGaps,
   computeSleepDrift,
@@ -18,6 +19,7 @@ import {
   computeMusicWindDown,
   computeSoundtrackToSilence,
   computeWorkListening,
+  computeQuietPeriodsInference,
 } from "./cross-platform";
 import {
   computeReciprocityInference,
@@ -61,7 +63,7 @@ function computeWorkHoursLost(
 
   let workSeconds = 0;
   for (const e of workEvents) {
-    workSeconds += EVENT_DURATION_SECONDS[e.eventType];
+    workSeconds += estimateEventDuration(e);
   }
 
   const totalMs = stats.effectiveRange.end.getTime() - stats.effectiveRange.start.getTime();
@@ -211,7 +213,7 @@ function computeTimeByPlatform(events: MetadataEvent[]): InferenceCard | null {
   let topSeconds = 0;
   let totalSeconds = 0;
   for (const e of events) {
-    const dur = EVENT_DURATION_SECONDS[e.eventType];
+    const dur = estimateEventDuration(e);
     totalSeconds += dur;
     if (e.source === topPlatform) topSeconds += dur;
   }
@@ -499,8 +501,16 @@ export function computeInferences(
       if (p !== "You") contactCounts.set(p, (contactCounts.get(p) ?? 0) + 1);
     }
   }
-  const threshold = userTriggered.length * 0.03;
-  const closeContacts = [...contactCounts.entries()].filter(([, c]) => c > threshold).length;
+  // How many contacts make up 80% of interactions (percentile-based)
+  const sorted = [...contactCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const totalWithContacts = sorted.reduce((s, [, c]) => s + c, 0);
+  let cumulative = 0, closeCount = 0;
+  for (const [, count] of sorted) {
+    cumulative += count;
+    closeCount++;
+    if (cumulative >= totalWithContacts * 0.8) break;
+  }
+  const closePct = Math.round((cumulative / totalWithContacts) * 100);
 
   // Busiest day of week (user-triggered only)
   const dowCounts = [0, 0, 0, 0, 0, 0, 0];
@@ -531,9 +541,9 @@ export function computeInferences(
       id: "close-contacts",
       icon: "users",
       titleKey: "inference.closeContacts.title",
-      titleParams: { count: closeContacts },
+      titleParams: { count: closeCount, pct: closePct },
       descKey: "inference.closeContacts.desc",
-      descParams: { totalContacts: contactCounts.size, count: closeContacts },
+      descParams: { totalContacts: contactCounts.size, count: closeCount, pct: closePct },
       privacyKey: "inference.closeContacts.privacy",
     },
     {
@@ -558,6 +568,7 @@ export function computeInferences(
     computeChattiestRelationship(userTriggered, stats),
     computeTimeByPlatform(userTriggered),
     computeActivityGaps(userTriggered, stats),
+    computeQuietPeriodsInference(userTriggered, stats, detectSleepingPatterns(userTriggered)),
     computeSleepDrift(userTriggered),
     computePlatformMigration(userTriggered),
     computeLateNightContactCorrelation(userTriggered),

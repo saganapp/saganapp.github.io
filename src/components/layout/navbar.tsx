@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { Menu, Trash2 } from "lucide-react";
+import { Loader2, Menu, Trash2 } from "lucide-react";
 import { SaganLogo } from "@/components/icons/sagan-logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,19 +47,29 @@ export function Navbar() {
   const navigate = useNavigate();
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
-  const { dataSummary, bumpDataVersion, setDataSummary, clearAllImports, resetFilters, setSelectedYear, setSelectedPlatform } = useAppStore();
+  const { dataSummary, bumpDataVersion, setDataSummary, clearAllImports, resetFilters, setSelectedYear, setSelectedPlatform, hydrateDataSummary } = useAppStore();
   const hasData = dataSummary.totalEvents > 0;
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    hydrateDataSummary();
+  }, [hydrateDataSummary]);
 
   const handleClearAllData = useCallback(async () => {
-    await clearAllData();
-    setDataSummary({ totalEvents: 0, platformCounts: {} });
-    clearAllImports();
-    resetFilters();
-    setSelectedYear(null);
-    setSelectedPlatform("all");
-    bumpDataVersion();
-    setOpen(false);
-    navigate("/");
+    setDeleting(true);
+    try {
+      await clearAllData();
+      setDataSummary({ totalEvents: 0, platformCounts: {} });
+      clearAllImports();
+      resetFilters();
+      setSelectedYear(null);
+      setSelectedPlatform("all");
+      bumpDataVersion();
+      setOpen(false);
+      navigate("/");
+    } finally {
+      setDeleting(false);
+    }
   }, [setDataSummary, clearAllImports, resetFilters, setSelectedYear, setSelectedPlatform, bumpDataVersion, navigate]);
 
   return (
@@ -109,8 +119,9 @@ export function Navbar() {
                         size="icon"
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                         aria-label={t("nav.cleanup")}
+                        disabled={deleting}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className={cn("h-4 w-4", deleting && "animate-shake")} />
                       </Button>
                     </AlertDialogTrigger>
                   </TooltipTrigger>
@@ -122,12 +133,13 @@ export function Navbar() {
                     <AlertDialogDescription>{t("import.clear.confirmDesc")}</AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>{t("import.clear.cancel")}</AlertDialogCancel>
+                    <AlertDialogCancel disabled={deleting}>{t("import.clear.cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleClearAllData}
+                      disabled={deleting}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      {t("import.clear.confirm")}
+                      {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t("import.clear.deleting")}</> : t("import.clear.confirm")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -148,8 +160,9 @@ export function Navbar() {
                   size="icon"
                   className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   aria-label={t("nav.cleanup")}
+                  disabled={deleting}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className={cn("h-4 w-4", deleting && "animate-shake")} />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -158,12 +171,13 @@ export function Navbar() {
                   <AlertDialogDescription>{t("import.clear.confirmDesc")}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>{t("import.clear.cancel")}</AlertDialogCancel>
+                  <AlertDialogCancel disabled={deleting}>{t("import.clear.cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleClearAllData}
+                    disabled={deleting}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    {t("import.clear.confirm")}
+                    {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t("import.clear.deleting")}</> : t("import.clear.confirm")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

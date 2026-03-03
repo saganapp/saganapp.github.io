@@ -21,6 +21,7 @@ import {
   detectRecurringLulls,
   detectSleepingPatterns,
   computeInferences,
+  computeQuietPeriods,
 } from "@/analysis";
 import type { WorkHoursAnalysis, DeviceRecord, DeviceTimelineMonth, RecurringLull, SleepingPattern, SocialCircle } from "@/analysis";
 import { computeSocialCircles } from "@/analysis";
@@ -352,10 +353,16 @@ export interface YearHints {
   devices: number[];
 }
 
+export interface TimelineAnnotation {
+  date: Date;
+  label: string;
+}
+
 export interface DashboardData {
   loading: boolean;
   stats: DashboardStats;
   timelineData: TimelineSeries[];
+  timelineAnnotations: TimelineAnnotation[];
   heatmapData: HeatmapRow[];
   platformBreakdown: PlatformBreakdownItem[];
   activityBreakdown: ActivityBreakdownItem[];
@@ -451,6 +458,7 @@ export function useDashboardData(): DashboardData {
       topCategories: [],
     },
     timelineData: [],
+    timelineAnnotations: [],
     heatmapData: [],
     platformBreakdown: [],
     activityBreakdown: [],
@@ -557,9 +565,20 @@ export function useDashboardData(): DashboardData {
         }
       }
 
+      // Build timeline annotations from quiet periods
+      const timelineAnnotations: TimelineAnnotation[] = [];
+      const quietPeriods = computeQuietPeriods(userTriggered, s, sleepPatterns);
+      for (const period of quietPeriods) {
+        timelineAnnotations.push({
+          date: period.start,
+          label: t("chart.annotation.quietPeriod", { hours: period.durationHours }),
+        });
+      }
+
       setData({
         stats: s,
         timelineData: computeTimelineData(events, s.effectiveRange),
+        timelineAnnotations,
         heatmapData: computeHeatmapData(events, dayLabels),
         platformBreakdown: computePlatformBreakdown(userTriggered),
         activityBreakdown: computeActivityBreakdown(userTriggered),

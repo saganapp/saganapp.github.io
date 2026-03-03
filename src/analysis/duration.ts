@@ -2,13 +2,16 @@ import type { MetadataEvent, Platform } from "@/parsers/types";
 import { EVENT_DURATION_SECONDS } from "@/parsers/types";
 
 export function estimateEventDuration(event: MetadataEvent): number {
+  if (event.source === "spotify" && typeof event.metadata.msPlayed === "number") {
+    return event.metadata.msPlayed / 1000;
+  }
   return EVENT_DURATION_SECONDS[event.eventType];
 }
 
 export function estimateTotalTime(events: MetadataEvent[]): number {
   let total = 0;
   for (const e of events) {
-    total += EVENT_DURATION_SECONDS[e.eventType];
+    total += estimateEventDuration(e);
   }
   return total;
 }
@@ -16,7 +19,7 @@ export function estimateTotalTime(events: MetadataEvent[]): number {
 export function estimateTimeByPlatform(events: MetadataEvent[]): Record<Platform, number> {
   const result = {} as Record<Platform, number>;
   for (const e of events) {
-    const dur = EVENT_DURATION_SECONDS[e.eventType];
+    const dur = estimateEventDuration(e);
     result[e.source] = (result[e.source] ?? 0) + dur;
   }
   return result;
@@ -42,7 +45,7 @@ export function estimateWorkHoursWasted(
   let totalSeconds = 0;
   const byPlatform = {} as Record<Platform, number>;
   for (const e of workEvents) {
-    const dur = EVENT_DURATION_SECONDS[e.eventType];
+    const dur = estimateEventDuration(e);
     totalSeconds += dur;
     byPlatform[e.source] = (byPlatform[e.source] ?? 0) + dur;
   }

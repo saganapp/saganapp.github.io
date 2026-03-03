@@ -185,6 +185,39 @@ html {
   }
 }
 
+/* ─── Trash shake animation ─── */
+.animate-shake {
+  animation: shake 0.5s ease-in-out infinite;
+}
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  20%      { transform: rotate(-12deg); }
+  40%      { transform: rotate(10deg); }
+  60%      { transform: rotate(-8deg); }
+  80%      { transform: rotate(6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-shake { animation: none; opacity: 0.6; }
+}
+
+/* ─── Tile reveal animation ─── */
+.tile-reveal-tile {
+  animation: tile-reveal-drop 350ms ease-in forwards;
+}
+@keyframes tile-reveal-drop {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile-reveal-tile {
+    animation: tile-reveal-fade 400ms ease-out forwards;
+  }
+  @keyframes tile-reveal-fade {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+  }
+}
+
 /* ─── Print styles ─── */
 @media print {
   /* Preserve colors in print */
