@@ -108,8 +108,8 @@ describe("detectRecurringLulls", () => {
     }
   });
 
-  it("filters out single-day-only patterns (requires >=2 days)", () => {
-    // Only skip hour 12 on Wednesday (day 3) — should not create a lull
+  it("allows single-day patterns (requires >=1 day)", () => {
+    // Only skip hour 12 on Wednesday (day 3) — should create a lull
     const events = makeEvents({
       weeks: 8,
       eventsPerSlot: 5,
@@ -117,15 +117,14 @@ describe("detectRecurringLulls", () => {
     });
 
     const lulls = detectRecurringLulls(events);
-    // No lull should have only 1 day
     for (const l of lulls) {
-      expect(l.daysOfWeek.length).toBeGreaterThanOrEqual(2);
+      expect(l.daysOfWeek.length).toBeGreaterThanOrEqual(1);
     }
-    // Specifically, no lull should cover only Wednesday at 12
+    // A Wednesday-at-12 lull should now be detected
     const wednesdayOnly = lulls.find(
       (l) => l.startHour === 12 && l.daysOfWeek.length === 1 && l.daysOfWeek[0] === 3,
     );
-    expect(wednesdayOnly).toBeUndefined();
+    expect(wednesdayOnly).toBeDefined();
   });
 
   it("rejects 3h windows (max gap is 2 hours)", () => {
