@@ -6,6 +6,10 @@ import { parseTikTokLikes } from "./likes";
 import { parseTikTokSearches } from "./searches";
 import { parseTikTokFollowing } from "./following";
 import { parseOffTikTokActivity } from "./off-tiktok";
+import { parseTikTokComments } from "./comments";
+import { parseTikTokDirectMessages } from "./direct-messages";
+import { parseTikTokPosts } from "./posts";
+import { parseTikTokLoginHistory } from "./login-history";
 
 export interface TikTokBatch {
   events: MetadataEvent[];
@@ -18,12 +22,22 @@ interface TikTokData {
     "Watch History"?: { VideoList?: any[] };
     Searches?: { SearchList?: any[] };
     "Off TikTok Activity"?: { OffTikTokActivityDataList?: any[] };
+    "Login History"?: { LoginHistoryList?: any[] };
   };
   "Likes and Favorites"?: {
     "Like List"?: { ItemFavoriteList?: any[] };
   };
   "Profile And Settings"?: {
     Following?: { Following?: any[] };
+  };
+  Comment?: {
+    Comments?: { CommentsList?: any[] };
+  };
+  "Direct Message"?: {
+    "Direct Messages"?: { ChatHistory?: Record<string, any[]> };
+  };
+  Post?: {
+    Posts?: { PostList?: any[] };
   };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -103,6 +117,18 @@ export async function* parseTikTokExport(
 
     const offTikTok = parsed["Your Activity"]?.["Off TikTok Activity"]?.OffTikTokActivityDataList;
     allEvents.push(...parseOffTikTokActivity(offTikTok));
+
+    const comments = parsed["Comment"]?.Comments?.CommentsList;
+    allEvents.push(...parseTikTokComments(comments));
+
+    const dms = parsed["Direct Message"]?.["Direct Messages"];
+    allEvents.push(...parseTikTokDirectMessages(dms));
+
+    const posts = parsed["Post"]?.Posts?.PostList;
+    allEvents.push(...parseTikTokPosts(posts));
+
+    const loginHistory = parsed["Your Activity"]?.["Login History"]?.LoginHistoryList;
+    allEvents.push(...parseTikTokLoginHistory(loginHistory));
 
     // Sort by timestamp
     allEvents.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());

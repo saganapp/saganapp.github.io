@@ -6,6 +6,8 @@ import { parseGoogleChat } from "./google-chat";
 import { parseChromeHistory } from "./chrome-history";
 import { parseCalendar } from "./calendar";
 import { parseLocationHistory } from "./location-history";
+import { parseGoogleMeet } from "./google-meet";
+import { parseReservation } from "./purchases";
 import { resetIdCounter } from "./utils";
 
 export interface GoogleBatch {
@@ -46,6 +48,12 @@ export function routeFile(
   }
   if (/Location History\/.*\.json$/.test(normalized)) {
     return parseLocationHistory(data);
+  }
+  if (/Google Meet\/.*\.csv$/.test(normalized)) {
+    return parseGoogleMeet(data);
+  }
+  if (/Purchases & Reservations\/.*\.json$/.test(normalized)) {
+    return parseReservation(data);
   }
 
   return [];

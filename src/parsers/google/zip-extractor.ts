@@ -11,6 +11,8 @@ const INCLUDE_PATTERNS = [
   /Calendar\/.*\.ics$/,
   /Contacts\/.*\.vcf$/,
   /Location History\/.*\.json$/,
+  /Google Meet\/.*\.csv$/,
+  /Purchases & Reservations\/.*\.json$/,
 ];
 
 function shouldExtract(filename: string): boolean {

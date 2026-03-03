@@ -58,5 +58,5 @@ export function ChartContainer({
     );
   }
 
-  return <div style={{ height: h }} role="img" aria-label={label}>{children}</div>;
+  return <div className="min-w-0 overflow-hidden" style={{ height: h }} role="img" aria-label={label}>{children}</div>;
 }

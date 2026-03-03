@@ -111,7 +111,7 @@ export function InferenceCards({ inferences }: InferenceCardsProps) {
   const { t } = useLocale();
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {inferences.map((inf, idx) => {
         const Icon = iconMap[inf.icon];
         const titleParams = resolveParams(inf.titleParams, t);

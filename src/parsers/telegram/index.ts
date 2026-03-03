@@ -2,6 +2,7 @@ import { unzip } from "fflate";
 import type { MetadataEvent, DailyAggregate, ParseProgressCallback } from "../types";
 import { resetIdCounter } from "./utils";
 import { parseTelegramMessages } from "./messages";
+import { parseTelegramContacts, type TelegramContact } from "./contacts";
 
 export interface TelegramBatch {
   events: MetadataEvent[];
@@ -14,6 +15,9 @@ interface TelegramData {
   };
   chats?: {
     list: unknown[];
+  };
+  contacts?: {
+    list?: TelegramContact[];
   };
 }
 
@@ -76,29 +80,38 @@ export async function* parseTelegramExport(
     const parsed: TelegramData = JSON.parse(jsonText);
     const userId = String(parsed.personal_information?.user_id ?? "");
 
-    if (!userId || !parsed.chats) {
+    if (!userId) {
       continue;
     }
 
-    // parseTelegramMessages is a synchronous generator that yields batches
-    const messageGen = parseTelegramMessages(
-      parsed.chats as { list: never[] },
-      userId,
-    );
+    // Parse messages if chats exist
+    if (parsed.chats) {
+      const messageGen = parseTelegramMessages(
+        parsed.chats as { list: never[] },
+        userId,
+      );
 
-    for (const batch of messageGen) {
-      totalEvents += batch.length;
-      yield { events: batch, aggregates: [] };
+      for (const batch of messageGen) {
+        totalEvents += batch.length;
+        yield { events: batch, aggregates: [] };
 
-      onProgress?.({
-        phase: "parsing",
-        progress: 0.3 + 0.7 * (totalEvents / 30000), // approximate
-        eventsProcessed: totalEvents,
-        currentFile: file.name,
-      });
+        onProgress?.({
+          phase: "parsing",
+          progress: 0.3 + 0.6 * (totalEvents / 30000), // approximate
+          eventsProcessed: totalEvents,
+          currentFile: file.name,
+        });
 
-      // Yield to main thread between batches
-      await new Promise((resolve) => setTimeout(resolve, 0));
+        // Yield to main thread between batches
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    }
+
+    // Parse contacts if present
+    const contactEvents = parseTelegramContacts(parsed.contacts?.list);
+    if (contactEvents.length > 0) {
+      totalEvents += contactEvents.length;
+      yield { events: contactEvents, aggregates: [] };
     }
 
     onProgress?.({

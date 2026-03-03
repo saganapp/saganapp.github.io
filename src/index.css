@@ -200,23 +200,6 @@ html {
   .animate-shake { animation: none; opacity: 0.6; }
 }
 
-/* ─── Tile reveal animation ─── */
-.tile-reveal-tile {
-  animation: tile-reveal-drop 350ms ease-in forwards;
-}
-@keyframes tile-reveal-drop {
-  0%   { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(20px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tile-reveal-tile {
-    animation: tile-reveal-fade 400ms ease-out forwards;
-  }
-  @keyframes tile-reveal-fade {
-    0%   { opacity: 1; }
-    100% { opacity: 0; }
-  }
-}
 
 /* ─── Print styles ─── */
 @media print {

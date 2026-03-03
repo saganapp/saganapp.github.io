@@ -8,12 +8,16 @@ export interface ExtractedFile {
   data: Uint8Array;
 }
 
-/** Only extract HTML files we care about: messages, likes, personal_information */
+/** Only extract HTML files we care about */
 function shouldExtract(filename: string): boolean {
   if (!filename.endsWith(".html")) return false;
   if (filename.includes("personal_information/personal_information/personal_information.html")) return true;
   if (filename.includes("/messages/") && filename.includes("message_")) return true;
   if (filename.includes("/likes/liked_posts.html")) return true;
+  if (filename.includes("login_activity.html")) return true;
+  if (filename.includes("followers_and_following/")) return true;
+  if (filename.includes("saved/saved_posts.html")) return true;
+  if (filename.includes("ads_information/ads_and_topics/")) return true;
   return false;
 }
 

@@ -5,6 +5,10 @@ import { parseTweets } from "./tweets";
 import { parseDMHeaders } from "./direct-messages";
 import { parseLikes } from "./likes";
 import { parseAdEngagements } from "./ads";
+import { parseIpAudit } from "./ip-audit";
+import { parseFollowers, parseFollowing } from "./social-graph";
+import { parseEmailChanges, parseScreenNameChanges, parseConnectedApps } from "./profile-changes";
+import { parseGrokChats } from "./grok";
 
 export interface TwitterBatch {
   events: MetadataEvent[];
@@ -23,6 +27,13 @@ interface AccountEntry {
 const SIMPLE_PARSERS: Record<string, (data: Uint8Array) => MetadataEvent[]> = {
   "data/like.js": parseLikes,
   "data/ad-engagements.js": parseAdEngagements,
+  "data/ip-audit.js": parseIpAudit,
+  "data/follower.js": parseFollowers,
+  "data/following.js": parseFollowing,
+  "data/email-address-change.js": parseEmailChanges,
+  "data/screen-name-change.js": parseScreenNameChanges,
+  "data/connected-application.js": parseConnectedApps,
+  "data/grok-chat-item.js": parseGrokChats,
 };
 
 /** DM files that require accountId for sent/received classification. */

@@ -237,7 +237,7 @@ export function DashboardPage() {
 
       {/* Stat Cards */}
       <motion.div
-        className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
         variants={container}
         initial="hidden"
         animate="show"
@@ -269,7 +269,7 @@ export function DashboardPage() {
 
       {/* Dashboard sections */}
       <motion.div
-        className="mt-8 grid gap-4 lg:grid-cols-2"
+        className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2"
         variants={container}
         initial="hidden"
         whileInView="show"
@@ -387,7 +387,7 @@ export function DashboardPage() {
             <CardContent>
               {loading ? (
                 <div className="space-y-3">
-                  <div className="grid gap-px" style={{ gridTemplateColumns: `auto repeat(14, 1fr)` }}>
+                  <div className="grid gap-px overflow-hidden" style={{ gridTemplateColumns: `auto repeat(14, 1fr)` }}>
                     <div />
                     {Array.from({ length: 14 }, (_, i) => (
                       <Skeleton key={`h-${i}`} className="h-3 w-full" />
@@ -680,7 +680,7 @@ export function DashboardPage() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="rounded-lg border bg-card p-4">
                       <div className="flex items-start gap-3">

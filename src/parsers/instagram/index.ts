@@ -3,6 +3,10 @@ import { resetIdCounter } from "./utils";
 import { extractDisplayName } from "./personal-info";
 import { parseInstagramMessages } from "./messages";
 import { parseInstagramLikes } from "./likes";
+import { parseLoginActivity } from "./login-activity";
+import { parseInstagramSocialGraph } from "./social-graph";
+import { parseSavedPosts } from "./saved-posts";
+import { parseVideosWatched, parseSuggestedProfiles } from "./ads-activity";
 import { streamInstagramFiles, type ExtractedFile } from "./zip-extractor";
 
 export interface InstagramBatch {
@@ -78,6 +82,18 @@ export async function* parseInstagramArchive(
         events = parseInstagramMessages(html, displayName);
       } else if (name.includes("/likes/liked_posts.html")) {
         events = parseInstagramLikes(html);
+      } else if (name.includes("login_activity.html")) {
+        events = parseLoginActivity(html);
+      } else if (name.includes("followers_and_following/following.html")) {
+        events = parseInstagramSocialGraph(html, "following");
+      } else if (name.includes("followers_and_following/") && name.includes("followers")) {
+        events = parseInstagramSocialGraph(html, "follower");
+      } else if (name.includes("saved/saved_posts.html")) {
+        events = parseSavedPosts(html);
+      } else if (name.includes("ads_and_topics/videos_watched.html")) {
+        events = parseVideosWatched(html);
+      } else if (name.includes("ads_and_topics/suggested_profiles_viewed.html")) {
+        events = parseSuggestedProfiles(html);
       }
 
       if (events.length > 0) {
