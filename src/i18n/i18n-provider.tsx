@@ -21,6 +21,8 @@ interface LocaleContextValue {
 const LocaleContext = createContext<LocaleContextValue | undefined>(undefined);
 
 function detectLocale(): Locale {
+  const hl = new URLSearchParams(window.location.search).get("hl");
+  if (hl === "en" || hl === "es") return hl;
   const stored = localStorage.getItem("sagan-locale");
   if (stored === "en" || stored === "es") return stored;
   if (navigator.language.startsWith("es")) return "es";
