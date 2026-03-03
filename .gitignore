@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 # Project-specific exclusions
+CLAUDE.md
 PLAN.md
 metadatos.md
 metadatos.md:Zone.Identifier
