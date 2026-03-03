@@ -178,17 +178,21 @@ export const en: Record<string, string> = {
   "import.progress.storing": "Storing events...",
   "import.progress.complete": "Complete",
   "import.progress.error": "Error",
+  "import.progress.warning": "No events found — check that the correct source type is selected",
   "import.progress.events": "{{count}} events processed",
   "import.complete.title": "Import Complete",
   "import.complete.desc": "Successfully imported {{count}} events.",
   "import.complete.dashboard": "View Dashboard",
   "import.complete.more": "Import More",
+  "import.complete.warningTitle": "No Events Imported",
+  "import.complete.warningDesc": "No events were found. Check that you selected the correct source type and uploaded the right files.",
   "import.clear.button": "Clear All Data",
   "nav.cleanup": "Clean up data",
   "import.clear.confirmTitle": "Clear all imported data?",
   "import.clear.confirmDesc": "This will permanently delete all imported events, sessions, and aggregates. This action cannot be undone.",
   "import.clear.confirm": "Yes, clear everything",
   "import.clear.cancel": "Cancel",
+  "import.clear.deleting": "Deleting...",
   "import.error.title": "Import Error",
   "import.history.title": "Imported Data",
   "import.history.events": "{{count}} events",
@@ -317,6 +321,8 @@ export const en: Record<string, string> = {
   "dashboard.workHours.weeklyLabel": "avg per week",
   "dashboard.workHours.totalLabel": "total",
   "dashboard.workHours.percentLabel": "avg of 9\u20135",
+  "dashboard.workHours.incompatible": "Incompatible with work",
+  "dashboard.workHours.compatible": "Compatible with work",
   "dashboard.contacts.title": "Top Contacts",
   "dashboard.contacts.desc": "Your most frequent contacts ranked by interaction count",
   "dashboard.contacts.rank": "#",
@@ -483,10 +489,9 @@ export const en: Record<string, string> = {
     "{{pct}}% of your digital activity happens on {{platform}}, making it your primary communication channel.",
   "inference.topPlatform.privacy":
     "Platform preference reveals which company holds most of your behavioral data.",
-  "inference.closeContacts.title_one": "{{count}} Close Contact",
-  "inference.closeContacts.title_other": "{{count}} Close Contacts",
+  "inference.closeContacts.title": "{{count}} contacts = {{pct}}% of interactions",
   "inference.closeContacts.desc":
-    "Out of {{totalContacts}} contacts, {{count}} account for the majority of your interactions — your inner circle.",
+    "Out of {{totalContacts}} contacts, just {{count}} make up {{pct}}% of all your interactions — your inner circle is small but dominant.",
   "inference.closeContacts.privacy":
     "Metadata reveals your closest relationships without reading any messages.",
   "inference.busiestDay.title": "{{dayName}}s Are Busiest",
@@ -564,6 +569,14 @@ export const en: Record<string, string> = {
     "You went quiet from {{startDate}} to {{endDate}}. {{totalGaps}} total gap(s) found in your data.",
   "inference.activityGaps.privacy":
     "Multi-day silences reveal vacations, illness, or life disruptions — without you sharing a word.",
+
+  // Cross-Platform: Quiet Periods
+  "inference.quietPeriods.title": "{{count}} unusual quiet periods detected",
+  "inference.quietPeriods.desc":
+    "We found {{count}} windows of 16–30h with almost no activity — {{hours1}}h starting {{date1}}, {{hours2}}h starting {{date2}}, {{hours3}}h starting {{date3}}. Could be a long flight, a surgery, or a day away from all devices.",
+  "inference.quietPeriods.privacy":
+    "Even a half-day of silence stands out against your normal patterns and can pinpoint personal events — flights, hospital visits, or off-grid days.",
+  "chart.annotation.quietPeriod": "{{hours}}h quiet",
 
   // Cross-Platform: Sleep Drift
   "inference.sleepDrift.title": "Bedtime shifted {{minutes}} min",
@@ -804,6 +817,9 @@ export const en: Record<string, string> = {
 
   "chart.resetZoom": "Reset zoom",
   "chart.total": "Total",
+  "chart.legend.quietDot": "Quiet period (16–30h of silence)",
+  "chart.hint.desktop": "Scroll to zoom · drag to pan",
+  "chart.hint.mobile": "Pinch to zoom · drag to pan",
 
   "pageTitle.home": "Privacy-First Metadata Analysis",
   "pageTitle.import": "Import Data",

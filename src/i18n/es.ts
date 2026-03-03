@@ -179,17 +179,21 @@ export const es: Record<string, string> = {
   "import.progress.storing": "Almacenando eventos...",
   "import.progress.complete": "Completo",
   "import.progress.error": "Error",
+  "import.progress.warning": "No se encontraron eventos — verifica que el tipo de fuente sea correcto",
   "import.progress.events": "{{count}} eventos procesados",
   "import.complete.title": "Importación Completa",
   "import.complete.desc": "Se importaron exitosamente {{count}} eventos.",
   "import.complete.dashboard": "Ver Panel",
   "import.complete.more": "Importar Más",
+  "import.complete.warningTitle": "No se importaron eventos",
+  "import.complete.warningDesc": "No se encontraron eventos. Verifica que hayas seleccionado el tipo de fuente correcto y subido los archivos adecuados.",
   "import.clear.button": "Borrar Todos los Datos",
   "nav.cleanup": "Limpiar datos",
   "import.clear.confirmTitle": "¿Borrar todos los datos importados?",
   "import.clear.confirmDesc": "Esto eliminará permanentemente todos los eventos, sesiones y agregados importados. Esta acción no se puede deshacer.",
   "import.clear.confirm": "Sí, borrar todo",
   "import.clear.cancel": "Cancelar",
+  "import.clear.deleting": "Eliminando...",
   "import.error.title": "Error de Importación",
   "import.history.title": "Datos Importados",
   "import.history.events": "{{count}} eventos",
@@ -318,6 +322,8 @@ export const es: Record<string, string> = {
   "dashboard.workHours.weeklyLabel": "prom. por semana",
   "dashboard.workHours.totalLabel": "total",
   "dashboard.workHours.percentLabel": "prom. de 9\u20135",
+  "dashboard.workHours.incompatible": "Incompatible con el trabajo",
+  "dashboard.workHours.compatible": "Compatible con el trabajo",
   "dashboard.contacts.title": "Contactos Principales",
   "dashboard.contacts.desc": "Tus contactos más frecuentes ordenados por interacciones",
   "dashboard.contacts.rank": "#",
@@ -484,10 +490,9 @@ export const es: Record<string, string> = {
     "El {{pct}}% de tu actividad digital ocurre en {{platform}}, convirtiéndola en tu canal de comunicación principal.",
   "inference.topPlatform.privacy":
     "La preferencia de plataforma revela qué empresa posee la mayoría de tus datos de comportamiento.",
-  "inference.closeContacts.title_one": "{{count}} Contacto Cercano",
-  "inference.closeContacts.title_other": "{{count}} Contactos Cercanos",
+  "inference.closeContacts.title": "{{count}} contactos = {{pct}}% de interacciones",
   "inference.closeContacts.desc":
-    "De {{totalContacts}} contactos, {{count}} representan la mayoría de tus interacciones — tu círculo íntimo.",
+    "De {{totalContacts}} contactos, solo {{count}} representan el {{pct}}% de todas tus interacciones — tu círculo íntimo es pequeño pero dominante.",
   "inference.closeContacts.privacy":
     "Los metadatos revelan tus relaciones más cercanas sin leer ningún mensaje.",
   "inference.busiestDay.title":
@@ -566,6 +571,14 @@ export const es: Record<string, string> = {
     "Estuviste en silencio del {{startDate}} al {{endDate}}. Se encontraron {{totalGaps}} brecha(s) en tus datos.",
   "inference.activityGaps.privacy":
     "Los silencios de varios d\u00edas revelan vacaciones, enfermedad o interrupciones vitales \u2014 sin que compartas una palabra.",
+
+  // Cross-Platform: Quiet Periods
+  "inference.quietPeriods.title": "{{count}} periodos de silencio inusuales detectados",
+  "inference.quietPeriods.desc":
+    "Encontramos {{count}} ventanas de 16\u201330h con casi ninguna actividad \u2014 {{hours1}}h desde {{date1}}, {{hours2}}h desde {{date2}}, {{hours3}}h desde {{date3}}. Podr\u00eda ser un vuelo largo, una cirug\u00eda o un d\u00eda lejos de todos los dispositivos.",
+  "inference.quietPeriods.privacy":
+    "Incluso medio d\u00eda de silencio destaca frente a tus patrones normales y puede se\u00f1alar eventos personales \u2014 vuelos, visitas hospitalarias o d\u00edas desconectado.",
+  "chart.annotation.quietPeriod": "{{hours}}h silencio",
 
   // Cross-Platform: Sleep Drift
   "inference.sleepDrift.title": "Tu hora de dormir cambi\u00f3 {{minutes}} min",
@@ -806,6 +819,9 @@ export const es: Record<string, string> = {
 
   "chart.resetZoom": "Restablecer zoom",
   "chart.total": "Total",
+  "chart.legend.quietDot": "Periodo de silencio (16\u201330h sin actividad)",
+  "chart.hint.desktop": "Desplaza para zoom \u00b7 arrastra para mover",
+  "chart.hint.mobile": "Pellizca para zoom \u00b7 arrastra para mover",
 
   "pageTitle.home": "Análisis de Metadatos Privado",
   "pageTitle.import": "Importar Datos",

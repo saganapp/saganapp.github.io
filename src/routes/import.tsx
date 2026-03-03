@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, Plus, Trash2, Database, ExternalLink, Lightbulb, Layers } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ArrowRight, Plus, Trash2, Database, ExternalLink, Lightbulb, Layers } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -250,19 +250,25 @@ export function ImportPage() {
         >
           <ImportProgress activeImports={activeImports} />
 
-          <div className="mt-6 rounded-xl border border-green-500/30 bg-green-500/5 p-6 text-center">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-green-500" />
+          <div className={`mt-6 rounded-xl border p-6 text-center ${totalEvents > 0 ? "border-green-500/30 bg-green-500/5" : "border-amber-500/30 bg-amber-500/5"}`}>
+            {totalEvents > 0 ? (
+              <CheckCircle2 className="mx-auto h-10 w-10 text-green-500" />
+            ) : (
+              <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" />
+            )}
             <h2 className="mt-3 text-lg font-semibold">
-              {t("import.complete.title")}
+              {t(totalEvents > 0 ? "import.complete.title" : "import.complete.warningTitle")}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {t("import.complete.desc", { count: totalEvents })}
+              {t(totalEvents > 0 ? "import.complete.desc" : "import.complete.warningDesc", { count: totalEvents })}
             </p>
             <div className="mt-4 flex items-center justify-center gap-3">
-              <Button onClick={() => navigate("/dashboard")}>
-                {t("import.complete.dashboard")}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+              {totalEvents > 0 && (
+                <Button onClick={() => navigate("/dashboard")}>
+                  {t("import.complete.dashboard")}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="outline" onClick={handleReset}>
                 <Plus className="h-4 w-4" />
                 {t("import.complete.more")}
