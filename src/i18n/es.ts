@@ -842,4 +842,10 @@ export const es: Record<string, string> = {
   "pageTitle.import": "Importar Datos",
   "pageTitle.dashboard": "Panel",
   "pageTitle.dossier": "Expediente para Terceros",
+
+  // HTML meta tags
+  "meta.description": "Descubre lo que tus metadatos revelan sobre tu vida. Privacidad ante todo, funciona completamente en tu navegador.",
+  "meta.ogTitle": "Sagan — Lo que revelan tus metadatos",
+  "meta.ogDescription": "Descubre lo que tus metadatos revelan sobre tu vida. Analiza exportaciones GDPR de WhatsApp, Instagram, Google, Telegram, TikTok y X. 100% privado — funciona completamente en tu navegador.",
+  "meta.ogImageAlt": "Sagan — Herramienta de análisis de metadatos con privacidad",
 };

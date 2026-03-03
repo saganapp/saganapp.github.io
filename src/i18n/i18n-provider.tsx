@@ -63,6 +63,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = locale;
+
+    // Update translatable meta tags
+    const dict = dictionaries[locale];
+    const meta = (selector: string, attr: string, key: string) => {
+      const el = document.querySelector(selector);
+      if (el) el.setAttribute(attr, dict[key] ?? en[key] ?? "");
+    };
+    meta('meta[name="description"]', "content", "meta.description");
+    meta('meta[property="og:title"]', "content", "meta.ogTitle");
+    meta('meta[property="og:description"]', "content", "meta.ogDescription");
+    meta('meta[property="og:image:alt"]', "content", "meta.ogImageAlt");
+    meta('meta[name="twitter:title"]', "content", "meta.ogTitle");
+    meta('meta[name="twitter:description"]', "content", "meta.description");
+    meta('meta[name="twitter:image:alt"]', "content", "meta.ogImageAlt");
   }, [locale]);
 
   const setLocale = (next: Locale) => {

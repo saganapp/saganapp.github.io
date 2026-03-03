@@ -840,4 +840,10 @@ export const en: Record<string, string> = {
   "pageTitle.import": "Import Data",
   "pageTitle.dashboard": "Dashboard",
   "pageTitle.dossier": "Dossier for a Third Party",
+
+  // HTML meta tags (updated dynamically by I18nProvider)
+  "meta.description": "Discover what your metadata reveals about your life. Privacy-first, runs entirely in your browser.",
+  "meta.ogTitle": "Sagan — What Your Metadata Reveals",
+  "meta.ogDescription": "Discover what your metadata reveals about your life. Analyze GDPR exports from WhatsApp, Instagram, Google, Telegram, TikTok, and X. 100% private — runs entirely in your browser.",
+  "meta.ogImageAlt": "Sagan — Privacy-first metadata analysis tool",
 };
