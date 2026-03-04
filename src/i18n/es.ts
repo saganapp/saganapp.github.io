@@ -244,10 +244,10 @@ export const es: Record<string, string> = {
     "Ajustes → Avanzado → Exportar datos de Telegram",
   "platform.telegram.signal": "Moderado",
   "platform.garmin.desc":
-    "Registro de hidratación, metas de bienestar, actividad social y eventos de cuenta",
+    "Actividades, sueño, métricas diarias de salud (pasos, FC, estrés, body battery), hidratación, metas de bienestar y actividad social",
   "platform.garmin.guide":
     "Cuenta Garmin → Gestión de datos → Exportar tus datos",
-  "platform.garmin.signal": "Limitado",
+  "platform.garmin.signal": "Muy detallado",
   "platform.spotify.desc":
     "Historial de reproducción, direcciones IP, dispositivos, búsquedas, playlists, grafo social, PII y segmentos de marketing",
   "platform.spotify.guide":
@@ -270,7 +270,7 @@ export const es: Record<string, string> = {
   "platform.tiktok.unlock": "A\u00f1ade h\u00e1bitos de navegaci\u00f3n, historial de visionado, patrones de b\u00fasqueda y exposici\u00f3n a anuncios",
   "platform.instagram.unlock": "A\u00f1ade patrones de DMs y publicaciones con like para an\u00e1lisis de contactos y reacciones",
   "platform.telegram.unlock": "A\u00f1ade patrones de mensajer\u00eda, nombres de chats y horarios de conversaci\u00f3n",
-  "platform.garmin.unlock": "Añade patrones de seguimiento de hidratación, consistencia de metas de bienestar y actividad social fitness",
+  "platform.garmin.unlock": "Añade seguimiento de actividades, análisis de sueño, tendencias de pasos/estrés/body battery, patrones de hidratación y récords fitness",
   "platform.spotify.unlock": "Añade horario de escucha, búsquedas, playlists, grafo social, exposición de PII, segmentos de marketing y comportamiento incógnito",
   "platform.whatsapp.unlock": "Añade actividad de cuenta, sesiones de dispositivos y patrones de mensajería desde exportaciones de chat",
 
@@ -324,6 +324,18 @@ export const es: Record<string, string> = {
   "dashboard.activity.title": "Desglose de Actividad",
   "dashboard.activity.desc":
     "Distribuci\u00f3n de eventos por categor\u00eda en todas las fuentes",
+
+  // Dashboard — Garmin sections
+  "dashboard.garminActivity.title": "Actividades Garmin",
+  "dashboard.garminActivity.desc": "Desglose de entrenamientos registrados por tipo",
+  "dashboard.garminActivity.times": "veces",
+  "dashboard.garminTrends.title": "Tendencias de Salud",
+  "dashboard.garminTrends.desc": "Métricas diarias de salud de tu reloj Garmin",
+  "dashboard.garminTrends.steps": "Pasos",
+  "dashboard.garminTrends.restingHr": "FC Reposo",
+  "dashboard.garminTrends.stress": "Estrés",
+  "dashboard.garminTrends.bodyBattery": "Body Battery",
+  "dashboard.garminTrends.noData": "Sin datos para esta métrica",
 
   // Dashboard — new sections
   "dashboard.stat.userTriggered": "Tus Acciones",
@@ -387,6 +399,31 @@ export const es: Record<string, string> = {
   "inference.hydration.title": "Registró hidratación el {{rate}}% de los días ({{days}} días)",
   "inference.hydration.desc": "Racha más larga: {{streak}} días. Mayor brecha: {{gap}} días. Sobre {{totalDays}} días de datos.",
   "inference.hydration.privacy": "La consistencia en el seguimiento de salud revela rasgos de personalidad, estabilidad de rutinas y posibles preocupaciones de salud.",
+
+  // Garmin: Resumen de Actividades
+  "inference.garminActivity.title": "{{count}} entrenamientos registrados",
+  "inference.garminActivity.desc": "Actividades principales: {{types}}. Total: {{hours}}h, promedio {{avgCalories}} cal/sesión.",
+  "inference.garminActivity.privacy": "Los patrones de ejercicio revelan nivel de forma física, rutina diaria, horarios de ejercicio preferidos y ubicaciones de gimnasios.",
+
+  // Garmin: Patrón de Sueño
+  "inference.garminSleep.title": "Promedio de {{avgDuration}}h de sueño por noche",
+  "inference.garminSleep.desc": "Hora de dormir promedio {{bedtime}}, despertar {{wakeTime}}. Basado en {{nights}} noches registradas.",
+  "inference.garminSleep.privacy": "Los datos de sueño revelan horarios diarios, calidad del sueño, turnos y posibles problemas de salud.",
+
+  // Garmin: Consistencia de Meta de Pasos
+  "inference.garminSteps.title": "Cumplió meta de pasos el {{metPct}}% de los días",
+  "inference.garminSteps.desc": "Promedio {{avgSteps}} pasos/día vs meta de {{avgGoal}}. Registrado durante {{days}} días.",
+  "inference.garminSteps.privacy": "La consistencia de pasos revela nivel de actividad, patrones sedentarios, hábitos de transporte y estabilidad de rutinas.",
+
+  // Garmin: Body Battery
+  "inference.garminBattery.title": "Body battery: {{avgHigh}} máx / {{avgLow}} mín",
+  "inference.garminBattery.desc": "Oscilación diaria promedio de {{swing}} puntos en {{days}} días de seguimiento.",
+  "inference.garminBattery.privacy": "Los patrones de body battery revelan calidad de recuperación, carga de estrés, efectividad del sueño y gestión de energía.",
+
+  // Garmin: Patrón de Estrés
+  "inference.garminStress.title": "Nivel de estrés promedio: {{avgStress}}/100",
+  "inference.garminStress.desc": "{{highPct}}% días de alto estrés ({{highDays}} de {{days}} días registrados).",
+  "inference.garminStress.privacy": "Las métricas de estrés exponen patrones de salud mental, presión laboral e indicadores de ansiedad relacionados con el estilo de vida.",
 
   // Spotify: Horario de Escucha
   "inference.listeningSchedule.title": "Pico de escucha a las {{peakHour}}, ~{{hoursPerDay}}h/día",

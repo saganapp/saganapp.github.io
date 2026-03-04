@@ -28,7 +28,14 @@ import {
   computeSocialCirclesInference,
 } from "./relationship-inferences";
 import { rankContacts } from "./contacts";
-import { computeHydrationConsistency } from "./garmin-inferences";
+import {
+  computeHydrationConsistency,
+  computeActivitySummary,
+  computeGarminSleepPattern,
+  computeStepGoalConsistency,
+  computeBodyBatteryPattern,
+  computeStressPattern,
+} from "./garmin-inferences";
 import {
   computeListeningSchedule,
   computeSkipRate,
@@ -589,6 +596,11 @@ export function computeInferences(
     computeResponseLatencyInference(events),      // needs sent + received
     computeSocialCirclesInference(events, rankContacts(events)), // rankContacts self-filters
     computeHydrationConsistency(events, stats),               // Garmin hydration tracking
+    computeActivitySummary(events),                            // Garmin activity summary
+    computeGarminSleepPattern(events),                         // Garmin sleep pattern
+    computeStepGoalConsistency(events),                        // Garmin step goal consistency
+    computeBodyBatteryPattern(events),                         // Garmin body battery
+    computeStressPattern(events),                              // Garmin stress pattern
     // Spotify-specific inferences
     computeListeningSchedule(events, stats),
     computeSkipRate(events),

@@ -74,7 +74,7 @@ export const PLATFORM_META: Record<Platform, PlatformMeta> = {
     icon: GarminIcon,
     colorClass: "text-garmin",
     cssVar: "--platform-garmin",
-    signalLevel: 2,
+    signalLevel: 5,
     helpUrl: "https://www.garmin.com/en-US/account/datamanagement/",
   },
   spotify: {

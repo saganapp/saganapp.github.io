@@ -43,6 +43,13 @@ export {
 } from "./relationship-inferences";
 export { buildDossier } from "./dossier";
 export type { DossierProfile, DossierEventItem, BuildDossierInput } from "./dossier";
-export { computeHydrationConsistency } from "./garmin-inferences";
+export {
+  computeHydrationConsistency,
+  computeActivitySummary,
+  computeGarminSleepPattern,
+  computeStepGoalConsistency,
+  computeBodyBatteryPattern,
+  computeStressPattern,
+} from "./garmin-inferences";
 export { computeCountryData, computeCountryDataWithGeoIp } from "./countries";
 export type { CountryData } from "./countries";

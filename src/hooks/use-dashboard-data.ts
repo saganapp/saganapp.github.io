@@ -359,6 +359,23 @@ export interface TimelineAnnotation {
   label: string;
 }
 
+export interface GarminActivityItem {
+  type: string;
+  count: number;
+  totalDurationHours: number;
+  totalCalories: number;
+}
+
+export interface GarminDailyMetric {
+  date: string;
+  steps?: number;
+  stepGoal?: number;
+  restingHr?: number;
+  avgStress?: number;
+  bodyBatteryHigh?: number;
+  bodyBatteryLow?: number;
+}
+
 export interface DashboardData {
   loading: boolean;
   isDemo: boolean;
@@ -385,6 +402,8 @@ export interface DashboardData {
   allPlatforms: Platform[];
   yearPlatformHasData: (year: number, platform: Platform) => boolean;
   yearHints: YearHints;
+  garminActivities: GarminActivityItem[];
+  garminDailyMetrics: GarminDailyMetric[];
 }
 
 const PLATFORM_SPECIFIC_IDS: Record<string, Platform> = {
@@ -406,6 +425,11 @@ const PLATFORM_SPECIFIC_IDS: Record<string, Platform> = {
   "search-patterns": "google",
   "calendar-load": "google",
   "hydration-consistency": "garmin",
+  "garmin-activity-summary": "garmin",
+  "garmin-sleep-pattern": "garmin",
+  "garmin-step-goals": "garmin",
+  "garmin-body-battery": "garmin",
+  "garmin-stress-pattern": "garmin",
 };
 
 const CROSS_PLATFORM_IDS = new Set([
@@ -416,6 +440,46 @@ const CROSS_PLATFORM_IDS = new Set([
   "time-by-platform",
   "weekend-platform-shift",
 ]);
+
+function computeGarminActivities(events: MetadataEvent[]): GarminActivityItem[] {
+  const byType = new Map<string, { count: number; totalMs: number; totalCal: number }>();
+  for (const e of events) {
+    if (e.source !== "garmin" || e.metadata.garminEventType !== "ACTIVITY") continue;
+    const type = (e.metadata.activityType as string) ?? "unknown";
+    const existing = byType.get(type) ?? { count: 0, totalMs: 0, totalCal: 0 };
+    existing.count++;
+    existing.totalMs += (e.metadata.durationMs as number) ?? 0;
+    existing.totalCal += (e.metadata.calories as number) ?? 0;
+    byType.set(type, existing);
+  }
+  return [...byType.entries()]
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([type, data]) => ({
+      type,
+      count: data.count,
+      totalDurationHours: Math.round(data.totalMs / 3_600_000 * 10) / 10,
+      totalCalories: Math.round(data.totalCal),
+    }));
+}
+
+function computeGarminDailyMetrics(events: MetadataEvent[]): GarminDailyMetric[] {
+  const byDate = new Map<string, GarminDailyMetric>();
+  for (const e of events) {
+    if (e.source !== "garmin" || e.metadata.garminEventType !== "DAILY_SUMMARY") continue;
+    const date = e.metadata.calendarDate as string;
+    if (!date) continue;
+    byDate.set(date, {
+      date,
+      steps: e.metadata.totalSteps as number | undefined,
+      stepGoal: e.metadata.dailyStepGoal as number | undefined,
+      restingHr: e.metadata.restingHr as number | undefined,
+      avgStress: e.metadata.avgStressLevel as number | undefined,
+      bodyBatteryHigh: e.metadata.bodyBatteryHigh as number | undefined,
+      bodyBatteryLow: e.metadata.bodyBatteryLow as number | undefined,
+    });
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
 
 function computeAvailablePlatforms(events: MetadataEvent[]): Platform[] {
   const seen = new Set<Platform>();
@@ -485,6 +549,8 @@ export function useDashboardData(): DashboardData {
     allPlatforms: [],
     yearPlatformHasData: () => true,
     yearHints: { lulls: [], sleep: [], workHours: [], nightContacts: [], weekendContacts: [], devices: [] },
+    garminActivities: [],
+    garminDailyMetrics: [],
   });
 
   useEffect(() => {
@@ -551,6 +617,10 @@ export function useDashboardData(): DashboardData {
 
       // Social circles
       const socialCircles = computeSocialCircles(events, contactRankings);
+
+      // Garmin-specific computations
+      const garminActivities = computeGarminActivities(events);
+      const garminDailyMetrics = computeGarminDailyMetrics(events);
 
       // Year hints — detect which individual years have data when combined "All" view doesn't
       const yearHints: YearHints = { lulls: [], sleep: [], workHours: [], nightContacts: [], weekendContacts: [], devices: [] };
@@ -622,6 +692,8 @@ export function useDashboardData(): DashboardData {
         allPlatforms,
         yearPlatformHasData,
         yearHints,
+        garminActivities,
+        garminDailyMetrics,
       };
 
       // Set data immediately with empty countryData, then resolve GeoIP async

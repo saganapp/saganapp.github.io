@@ -715,6 +715,177 @@ export function generateDemoData(config?: GenerateConfig): MetadataEvent[] {
     fillerCursor.setDate(fillerCursor.getDate() + 1);
   }
 
+  // Phase 15: Garmin detailed data — activities, sleep, daily summaries
+  const garminRand = mulberry32(seed + 1500);
+  const ACTIVITY_TYPES = [
+    { type: "strength_training", sport: "TRAINING", durationRange: [1800000, 3600000], calRange: [200, 600], hasGps: false },
+    { type: "running", sport: "RUNNING", durationRange: [1200000, 3600000], calRange: [300, 800], hasGps: true },
+    { type: "walking", sport: "STEPS", durationRange: [1800000, 5400000], calRange: [100, 400], hasGps: true },
+    { type: "hiit", sport: "FITNESS_EQUIPMENT", durationRange: [900000, 2400000], calRange: [250, 500], hasGps: false },
+  ];
+
+  // Generate ~25 activities spread across the timeline
+  for (let i = 0; i < 25; i++) {
+    const dayMs = startMs + garminRand() * (endMs - startMs);
+    const day = new Date(dayMs);
+    let hour = 7 + Math.floor(garminRand() * 11); // 7am-5pm
+    if (hour >= 12) hour++; // skip lunch hour to preserve lunch lull
+    const minute = Math.floor(garminRand() * 60);
+    const timestamp = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour, minute, 0);
+
+    const actConfig = ACTIVITY_TYPES[Math.floor(garminRand() * ACTIVITY_TYPES.length)];
+    const duration = actConfig.durationRange[0] + garminRand() * (actConfig.durationRange[1] - actConfig.durationRange[0]);
+    const calories = actConfig.calRange[0] + garminRand() * (actConfig.calRange[1] - actConfig.calRange[0]);
+    const avgHr = 100 + Math.floor(garminRand() * 60);
+
+    counters["ga"] = (counters["ga"] ?? 0) + 1;
+    const id = `demo-ga-${String(counters["ga"]).padStart(4, "0")}`;
+
+    const metadata: Record<string, unknown> = {
+      garminEventType: "ACTIVITY",
+      activityType: actConfig.type,
+      sportType: actConfig.sport,
+      name: actConfig.type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      durationMs: Math.round(duration),
+      calories: Math.round(calories),
+      avgHr,
+      maxHr: avgHr + 15 + Math.floor(garminRand() * 20),
+      minHr: avgHr - 20 - Math.floor(garminRand() * 15),
+      steps: actConfig.type === "running" || actConfig.type === "walking" ? Math.round(duration / 600) : Math.round(garminRand() * 20),
+    };
+
+    if (actConfig.hasGps) {
+      metadata.distanceMeters = Math.round(duration / 300 * 100) / 100;
+      // Madrid area coordinates
+      metadata.startLatitude = 40.42 + garminRand() * 0.03;
+      metadata.startLongitude = -3.68 + garminRand() * 0.04;
+      metadata.locationName = "Madrid";
+    }
+
+    afterQuiet.push({
+      id,
+      source: "garmin",
+      eventType: "wellness_log",
+      timestamp,
+      actor: "You",
+      participants: [],
+      metadata,
+    });
+
+    // Also emit location event for GPS activities
+    if (actConfig.hasGps) {
+      counters["ga"] = (counters["ga"] ?? 0) + 1;
+      afterQuiet.push({
+        id: `demo-ga-${String(counters["ga"]).padStart(4, "0")}`,
+        source: "garmin",
+        eventType: "location",
+        timestamp,
+        actor: "You",
+        participants: [],
+        metadata: {
+          garminEventType: "ACTIVITY_LOCATION",
+          latitude: metadata.startLatitude,
+          longitude: metadata.startLongitude,
+          locationName: "Madrid",
+          activityType: actConfig.type,
+        },
+      });
+    }
+  }
+
+  // Generate ~40 sleep records
+  const sleepRand2 = mulberry32(seed + 1510);
+  for (let i = 0; i < 40; i++) {
+    const dayMs = startMs + sleepRand2() * (endMs - startMs);
+    const day = new Date(dayMs);
+    // Bedtime: 22:00-00:30
+    const bedHour = 22 + Math.floor(sleepRand2() * 3);
+    const bedMin = Math.floor(sleepRand2() * 60);
+    const sleepStart = new Date(day.getFullYear(), day.getMonth(), day.getDate(), bedHour >= 24 ? bedHour - 24 : bedHour, bedMin, 0);
+    if (bedHour >= 24) sleepStart.setDate(sleepStart.getDate() + 1);
+
+    // Duration: 5-9 hours
+    const durationH = 5 + sleepRand2() * 4;
+    const sleepEnd = new Date(sleepStart.getTime() + durationH * 3600000);
+
+    // Most records are UNCONFIRMED with basic data, some OFF_WRIST
+    const isWorn = sleepRand2() < 0.8;
+    const confirmation = isWorn ? "UNCONFIRMED" : "OFF_WRIST";
+    const deepSleep = isWorn ? Math.round(durationH * 0.2 * 3600) : 0;
+    const lightSleep = isWorn ? Math.round(durationH * 0.5 * 3600) : 0;
+    const awakeSleep = isWorn ? Math.round(durationH * 0.1 * 3600) : 0;
+
+    counters["gs"] = (counters["gs"] ?? 0) + 1;
+    afterQuiet.push({
+      id: `demo-gs-${String(counters["gs"]).padStart(4, "0")}`,
+      source: "garmin",
+      eventType: "wellness_log",
+      timestamp: sleepEnd,
+      actor: "You",
+      participants: [],
+      metadata: {
+        garminEventType: "SLEEP",
+        sleepStartGmt: sleepStart.toISOString(),
+        sleepEndGmt: sleepEnd.toISOString(),
+        calendarDate: getDateKey(sleepEnd),
+        confirmationType: confirmation,
+        deepSleepSeconds: deepSleep,
+        lightSleepSeconds: lightSleep,
+        awakeSleepSeconds: awakeSleep,
+        isWorn,
+      },
+    });
+  }
+
+  // Generate ~50 daily summaries (one per day for recent ~2 months worth)
+  const udsRand = mulberry32(seed + 1520);
+  const udsStartMs = endMs - 60 * 24 * 60 * 60 * 1000; // last ~60 days
+  for (let d = 0; d < 50; d++) {
+    const dayMs = udsStartMs + (d / 50) * (endMs - udsStartMs);
+    const day = new Date(dayMs);
+    const calendarDate = getDateKey(day);
+    // Place at 23:59 to avoid affecting lunch lull detection (these are daily summaries, not user actions)
+    const timestamp = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 0);
+
+    const steps = 3000 + Math.floor(udsRand() * 12000);
+    const stepGoal = 5000 + Math.floor(udsRand() * 3000);
+    const restingHr = 55 + Math.floor(udsRand() * 25);
+    const avgStress = 20 + Math.floor(udsRand() * 50);
+    const bbHigh = 60 + Math.floor(udsRand() * 40);
+    const bbLow = 5 + Math.floor(udsRand() * 30);
+
+    counters["gu"] = (counters["gu"] ?? 0) + 1;
+    afterQuiet.push({
+      id: `demo-gu-${String(counters["gu"]).padStart(4, "0")}`,
+      source: "garmin",
+      eventType: "wellness_log",
+      timestamp,
+      actor: "You",
+      participants: [],
+      metadata: {
+        garminEventType: "DAILY_SUMMARY",
+        calendarDate,
+        totalSteps: steps,
+        dailyStepGoal: stepGoal,
+        totalCalories: 1800 + Math.floor(udsRand() * 800),
+        activeCalories: 200 + Math.floor(udsRand() * 500),
+        minHr: 45 + Math.floor(udsRand() * 15),
+        maxHr: 90 + Math.floor(udsRand() * 50),
+        restingHr,
+        activeSeconds: 1800 + Math.floor(udsRand() * 5000),
+        moderateIntensityMinutes: Math.floor(udsRand() * 60),
+        vigorousIntensityMinutes: Math.floor(udsRand() * 30),
+        avgStressLevel: avgStress,
+        maxStressLevel: avgStress + 10 + Math.floor(udsRand() * 30),
+        bodyBatteryHigh: bbHigh,
+        bodyBatteryLow: bbLow,
+        bodyBatteryCharged: bbHigh - bbLow,
+        bodyBatteryDrained: bbHigh - bbLow - Math.floor(udsRand() * 10),
+        avgWakingRespiration: 14 + Math.floor(udsRand() * 6),
+      },
+    });
+  }
+
   // Sort by timestamp
   afterQuiet.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 

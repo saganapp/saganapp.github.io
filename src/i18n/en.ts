@@ -243,10 +243,10 @@ export const en: Record<string, string> = {
     "Settings → Advanced → Export Telegram Data",
   "platform.telegram.signal": "Moderate",
   "platform.garmin.desc":
-    "Hydration logging, wellness goals, social activity, and account events",
+    "Activities, sleep, daily health metrics (steps, HR, stress, body battery), hydration, wellness goals, and social activity",
   "platform.garmin.guide":
     "Garmin Account → Data Management → Export Your Data",
-  "platform.garmin.signal": "Limited",
+  "platform.garmin.signal": "Very detailed",
   "platform.spotify.desc":
     "Play history, IP addresses, devices, search queries, playlists, social graph, PII, and marketing segments",
   "platform.spotify.guide":
@@ -269,7 +269,7 @@ export const en: Record<string, string> = {
   "platform.tiktok.unlock": "Adds browsing habits, watch history, search patterns, and ad exposure",
   "platform.instagram.unlock": "Adds DM patterns and liked posts for contact and reaction analysis",
   "platform.telegram.unlock": "Adds messaging patterns, chat names, and conversation timing",
-  "platform.garmin.unlock": "Adds hydration tracking patterns, wellness goal consistency, and fitness social activity",
+  "platform.garmin.unlock": "Adds activity tracking, sleep analysis, step/stress/body battery trends, hydration patterns, and fitness records",
   "platform.spotify.unlock": "Adds listening schedule, search queries, playlists, social graph, PII exposure, marketing segments, and incognito behavior",
   "platform.whatsapp.unlock": "Adds account activity, device sessions, and messaging patterns from chat exports",
 
@@ -323,6 +323,18 @@ export const en: Record<string, string> = {
   "dashboard.activity.title": "Activity Breakdown",
   "dashboard.activity.desc":
     "Distribution of events by category across all sources",
+
+  // Dashboard — Garmin sections
+  "dashboard.garminActivity.title": "Garmin Activities",
+  "dashboard.garminActivity.desc": "Breakdown of tracked workouts by type",
+  "dashboard.garminActivity.times": "times",
+  "dashboard.garminTrends.title": "Health Trends",
+  "dashboard.garminTrends.desc": "Daily health metrics from your Garmin watch",
+  "dashboard.garminTrends.steps": "Steps",
+  "dashboard.garminTrends.restingHr": "Resting HR",
+  "dashboard.garminTrends.stress": "Stress",
+  "dashboard.garminTrends.bodyBattery": "Body Battery",
+  "dashboard.garminTrends.noData": "No data for this metric",
 
   // Dashboard — new sections
   "dashboard.stat.userTriggered": "Your Actions",
@@ -386,6 +398,31 @@ export const en: Record<string, string> = {
   "inference.hydration.title": "Tracked hydration {{rate}}% of days ({{days}} days)",
   "inference.hydration.desc": "Longest streak: {{streak}} days. Longest gap: {{gap}} days. Over {{totalDays}} days of data.",
   "inference.hydration.privacy": "Health tracking consistency reveals personality traits, routine stability, and potential health concerns.",
+
+  // Garmin: Activity Summary
+  "inference.garminActivity.title": "{{count}} tracked workouts",
+  "inference.garminActivity.desc": "Top activities: {{types}}. Total: {{hours}}h, avg {{avgCalories}} cal/session.",
+  "inference.garminActivity.privacy": "Workout patterns reveal fitness level, daily routine, preferred exercise times, and gym locations.",
+
+  // Garmin: Sleep Pattern
+  "inference.garminSleep.title": "Average {{avgDuration}}h of sleep per night",
+  "inference.garminSleep.desc": "Avg bedtime {{bedtime}}, wake time {{wakeTime}}. Based on {{nights}} tracked nights.",
+  "inference.garminSleep.privacy": "Sleep data reveals daily schedule, sleep quality, shift patterns, and potential health issues.",
+
+  // Garmin: Step Goal Consistency
+  "inference.garminSteps.title": "Met step goal {{metPct}}% of days",
+  "inference.garminSteps.desc": "Avg {{avgSteps}} steps/day vs {{avgGoal}} goal. Tracked over {{days}} days.",
+  "inference.garminSteps.privacy": "Step consistency reveals activity level, sedentary patterns, commute habits, and routine stability.",
+
+  // Garmin: Body Battery
+  "inference.garminBattery.title": "Body battery: {{avgHigh}} high / {{avgLow}} low",
+  "inference.garminBattery.desc": "Average daily swing of {{swing}} points across {{days}} days of tracking.",
+  "inference.garminBattery.privacy": "Body battery patterns reveal recovery quality, stress load, sleep effectiveness, and energy management.",
+
+  // Garmin: Stress Pattern
+  "inference.garminStress.title": "Average stress level: {{avgStress}}/100",
+  "inference.garminStress.desc": "{{highPct}}% high-stress days ({{highDays}} of {{days}} days tracked).",
+  "inference.garminStress.privacy": "Stress metrics expose mental health patterns, work pressure, and lifestyle-related anxiety indicators.",
 
   // Spotify: Listening Schedule
   "inference.listeningSchedule.title": "Peak listening at {{peakHour}}, ~{{hoursPerDay}}h/day",

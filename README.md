@@ -96,7 +96,7 @@ src/
 │   ├── cross-platform.ts     # Multi-source pattern detection
 │   ├── relationships.ts      # Reciprocity, trends, social circles
 │   ├── spotify-inferences.ts # Skip rate, incognito, listening countries
-│   ├── garmin-inferences.ts  # Hydration consistency
+│   ├── garmin-inferences.ts  # Activity summary, sleep, steps, body battery, stress, hydration
 │   └── dossier.ts            # Life event compilation
 │
 ├── hooks/
@@ -171,7 +171,7 @@ The site is served at [saganapp.github.io](https://saganapp.github.io).
 | X (Twitter) | Tweets, DMs, likes, ad engagement | Detailed |
 | Google | Search, Gmail, Chrome, YouTube, Calendar, location history | Very detailed |
 | Telegram | Sent messages across all chats and groups | Moderate |
-| Garmin | Hydration logging, wellness goals, social activity | Limited |
+| Garmin | Activities, sleep, daily health (steps/HR/stress/body battery), hydration, wellness goals | Very detailed |
 | Spotify | Full play history, IP addresses, devices, skip patterns, incognito | Very detailed |
 
 ## License

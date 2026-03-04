@@ -222,6 +222,13 @@ const exportGuideDefs: {
     },
   },
   {
+    platform: "garmin",
+    url: {
+      en: "https://www.garmin.com/en-US/account/datamanagement/",
+      es: "https://www.garmin.com/es-ES/account/datamanagement/",
+    },
+  },
+  {
     platform: "twitter",
     url: {
       en: "https://help.x.com/en/managing-your-account/how-to-download-your-x-archive",
@@ -247,13 +254,6 @@ const exportGuideDefs: {
     url: {
       en: "https://telegram.org/blog/export-and-more",
       es: "https://telegram.org/blog/export-and-more",
-    },
-  },
-  {
-    platform: "garmin",
-    url: {
-      en: "https://www.garmin.com/en-US/account/datamanagement/",
-      es: "https://www.garmin.com/es-ES/account/datamanagement/",
     },
   },
   {

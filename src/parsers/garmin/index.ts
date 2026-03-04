@@ -3,7 +3,12 @@ import type { MetadataEvent, DailyAggregate, ParseProgressCallback } from "../ty
 import { resetIdCounter } from "./utils";
 import { parseGarminEvents } from "./events";
 import { parseGarminComments, parseGarminLikes } from "./social";
-import { parseGarminWorkouts, parseGarminGear, parseGarminBiometrics, parseGarminGoals } from "./fitness";
+import { parseGarminWorkouts, parseGarminGear, parseGarminBiometrics, parseGarminGoals, parseGarminPersonalRecords } from "./fitness";
+import { parseGarminActivities } from "./activities";
+import { parseGarminSleep } from "./sleep";
+import { parseGarminDailySummary } from "./daily-summary";
+import { parseGarminLifestyleLogging, parseGarminHydrationLog } from "./wellness";
+import { parseGarminDevices } from "./devices";
 
 export interface GarminBatch {
   events: MetadataEvent[];
@@ -130,6 +135,83 @@ export async function* parseGarminExport(
         if (Array.isArray(data)) {
           allEvents.push(...parseGarminGoals(data));
         }
+      }
+    }
+
+    // 5. Summarized Activities
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("DI-Connect-Fitness/") || key.includes("DI_CONNECT/DI-Connect-Fitness/")) &&
+        key.includes("_summarizedActivities.json")
+      ) {
+        const data = parseJson(key);
+        if (data) allEvents.push(...parseGarminActivities(Array.isArray(data) ? data : [data]));
+      }
+    }
+
+    // 6. Sleep Data
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("DI-Connect-Wellness/") || key.includes("DI_CONNECT/DI-Connect-Wellness/")) &&
+        key.includes("_sleepData.json")
+      ) {
+        const data = parseJson(key);
+        if (Array.isArray(data)) allEvents.push(...parseGarminSleep(data));
+      }
+    }
+
+    // 7. User Daily Summary (UDS) files
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("DI-Connect-Aggregator/") || key.includes("DI_CONNECT/DI-Connect-Aggregator/")) &&
+        key.match(/UDSFile_.*\.json$/)
+      ) {
+        const data = parseJson(key);
+        if (Array.isArray(data)) allEvents.push(...parseGarminDailySummary(data));
+      }
+    }
+
+    // 8. Personal Records
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("DI-Connect-Fitness/") || key.includes("DI_CONNECT/DI-Connect-Fitness/")) &&
+        key.includes("_personalRecord.json")
+      ) {
+        const data = parseJson(key);
+        if (data) allEvents.push(...parseGarminPersonalRecords(Array.isArray(data) ? data : [data]));
+      }
+    }
+
+    // 9. Lifestyle Logging
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("DI-Connect-Wellness/") || key.includes("DI_CONNECT/DI-Connect-Wellness/")) &&
+        key.includes("_LifestyleLogging.json")
+      ) {
+        const data = parseJson(key);
+        if (data) allEvents.push(...parseGarminLifestyleLogging(Array.isArray(data) ? data : [data]));
+      }
+    }
+
+    // 10. Hydration Log
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("DI-Connect-Aggregator/") || key.includes("DI_CONNECT/DI-Connect-Aggregator/")) &&
+        key.match(/HydrationLogFile_.*\.json$/)
+      ) {
+        const data = parseJson(key);
+        if (Array.isArray(data)) allEvents.push(...parseGarminHydrationLog(data));
+      }
+    }
+
+    // 11. Device Info
+    for (const key of Object.keys(unzipped)) {
+      if (
+        (key.includes("IT_DEVICE_AND_CONTENT/") || key.includes("IT_DEVICE_AND_CONTENT/")) &&
+        key.endsWith("devicesandcontent.json")
+      ) {
+        const data = parseJson(key);
+        if (data) allEvents.push(...parseGarminDevices(data));
       }
     }
 

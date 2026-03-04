@@ -1,5 +1,5 @@
 import type { MetadataEvent } from "../types";
-import { makeGarminEvent, parseGarminDate } from "./utils";
+import { makeGarminEvent, parseGarminDate, parseGarminLongDate } from "./utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -145,6 +145,52 @@ export function parseGarminGoals(entries: GarminGoalEntry[] | null | undefined):
         goalValue: goal.goalValue,
       }),
     );
+  }
+
+  return events;
+}
+
+// --- Personal Records ---
+
+interface GarminPersonalRecord {
+  personalRecordId?: number;
+  activityId?: number;
+  value?: number;
+  prStartTimeGMT?: string;
+  personalRecordType?: string;
+  createdDate?: string;
+  current?: boolean;
+}
+
+interface PersonalRecordWrapper {
+  personalRecords?: GarminPersonalRecord[];
+}
+
+export function parseGarminPersonalRecords(
+  data: unknown,
+): MetadataEvent[] {
+  if (!Array.isArray(data)) return [];
+
+  const events: MetadataEvent[] = [];
+
+  for (const wrapper of data as PersonalRecordWrapper[]) {
+    if (!Array.isArray(wrapper?.personalRecords)) continue;
+
+    for (const record of wrapper.personalRecords) {
+      const timestamp = parseGarminLongDate(record.prStartTimeGMT)
+        ?? parseGarminDate(record.createdDate);
+      if (!timestamp) continue;
+
+      events.push(
+        makeGarminEvent("wellness_log", timestamp, "You", [], {
+          garminEventType: "PERSONAL_RECORD",
+          recordType: record.personalRecordType,
+          value: record.value,
+          current: record.current,
+          activityId: record.activityId,
+        }),
+      );
+    }
   }
 
   return events;

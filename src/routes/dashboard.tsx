@@ -41,6 +41,8 @@ import { ChartContainer } from "@/components/charts/chart-container";
 import { TimelineChart } from "@/components/charts/timeline-chart";
 import { HeatmapChart } from "@/components/charts/heatmap-chart";
 import { ActivityBarChart } from "@/components/charts/activity-bar-chart";
+import { GarminActivityChart } from "@/components/charts/garmin-activity-chart";
+import { GarminTrendsChart } from "@/components/charts/garmin-trends-chart";
 import { InferenceCards } from "@/components/charts/inference-cards";
 import { ContactRankingTable } from "@/components/charts/contact-ranking-table";
 import { NightContacts } from "@/components/charts/night-contacts";
@@ -73,6 +75,7 @@ export function DashboardPage() {
     loading: dataLoading, isDemo: demoMode, stats, timelineData, timelineAnnotations, heatmapData, activityBreakdown, inferences,
     contactRankings, nightContacts, weekendContacts, devices, deviceTimeline,
     workHoursAnalysis, lulls, sleepPatterns, countryData, availableYears, allPlatforms, yearPlatformHasData, yearHints,
+    garminActivities, garminDailyMetrics,
   } = useDashboardData();
   const { t, locale } = useLocale();
   const selectedYear = useAppStore((s) => s.selectedYear);
@@ -751,6 +754,48 @@ export function DashboardPage() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Garmin Activity Breakdown — full width */}
+        {garminActivities.length > 0 && !loading && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="lg:col-span-2">
+            <Card className="h-full">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4" style={{ color: "var(--platform-garmin)" }} />
+                  <CardTitle className="text-base">{t("dashboard.garminActivity.title")}</CardTitle>
+                  {demoMode && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 text-muted-foreground">{t("demo.badge")}</Badge>}
+                </div>
+                <CardDescription>{t("dashboard.garminActivity.desc")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ErrorBoundary compact>
+                  <GarminActivityChart data={garminActivities} />
+                </ErrorBoundary>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Garmin Health Trends — full width */}
+        {garminDailyMetrics.length > 0 && !loading && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="lg:col-span-2">
+            <Card className="h-full">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" style={{ color: "var(--platform-garmin)" }} />
+                  <CardTitle className="text-base">{t("dashboard.garminTrends.title")}</CardTitle>
+                  {demoMode && <Badge variant="outline" className="ml-auto text-[10px] px-1.5 py-0 text-muted-foreground">{t("demo.badge")}</Badge>}
+                </div>
+                <CardDescription>{t("dashboard.garminTrends.desc")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ErrorBoundary compact>
+                  <GarminTrendsChart data={garminDailyMetrics} />
+                </ErrorBoundary>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Dossier CTA */}
         {hasData && !loading && (
