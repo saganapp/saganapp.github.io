@@ -35,6 +35,10 @@ export const HOURLY_WEIGHTS: Record<Platform, number[]> = {
     1, 0.5, 0.3, 0.2, 0.2, 0.5, 2, 5, 8, 7, 5, 4,
     4, 4, 5, 5, 6, 7, 8, 9, 8, 6, 4, 2,
   ],
+  apple: [
+    0.5, 0.3, 0.2, 0.1, 0.2, 0.3, 0.5, 1, 2, 4, 5, 4,
+    3, 3, 4, 5, 6, 7, 8, 9, 10, 8, 5, 2,
+  ],
 };
 
 // Per-platform event type probability weights
@@ -86,6 +90,12 @@ export const EVENT_TYPE_WEIGHTS: Record<Platform, Partial<Record<EventType, numb
   spotify: {
     media_played: 100,
   },
+  apple: {
+    browsing: 40,
+    search: 15,
+    other: 35,
+    ad_interaction: 10,
+  },
 };
 
 // Weekend activity multipliers (1.0 = same as weekday)
@@ -98,4 +108,5 @@ export const WEEKEND_MULTIPLIERS: Record<Platform, number> = {
   telegram: 1.1,
   garmin: 0.7,
   spotify: 1.3,
+  apple: 1.4,
 };

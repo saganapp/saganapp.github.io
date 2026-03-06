@@ -9,6 +9,7 @@ import {
   TelegramIcon,
   GarminIcon,
   SpotifyIcon,
+  AppleIcon,
 } from "@/components/icons/platform-icons";
 
 export interface PlatformMeta {
@@ -84,5 +85,13 @@ export const PLATFORM_META: Record<Platform, PlatformMeta> = {
     cssVar: "--platform-spotify",
     signalLevel: 5,
     helpUrl: "https://support.spotify.com/us/article/data-rights-and-privacy-settings/",
+  },
+  apple: {
+    name: "Apple",
+    icon: AppleIcon,
+    colorClass: "text-apple",
+    cssVar: "--platform-apple",
+    signalLevel: 4,
+    helpUrl: "https://privacy.apple.com/",
   },
 };

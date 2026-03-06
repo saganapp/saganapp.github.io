@@ -7,6 +7,7 @@ export const PLATFORMS = [
   "telegram",
   "garmin",
   "spotify",
+  "apple",
 ] as const;
 
 export type Platform = (typeof PLATFORMS)[number];

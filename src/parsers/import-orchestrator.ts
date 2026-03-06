@@ -8,6 +8,7 @@ import { parseTikTokExport } from "./tiktok/index";
 import { parseWhatsAppExport } from "./whatsapp/index";
 import { parseGarminExport } from "./garmin/index";
 import { parseSpotifyExport } from "./spotify/index";
+import { parseAppleExport } from "./apple/index";
 import { addEvents, addImportSession, addDailyAggregates } from "@/store/db";
 import { useAppStore } from "@/store/app-store";
 import { clearDemoCache } from "@/demo/load-demo";
@@ -189,6 +190,8 @@ function getParserForPlatform(
       return parseGarminExport(files, onProgress);
     case "spotify":
       return parseSpotifyExport(files, onProgress);
+    case "apple":
+      return parseAppleExport(files, onProgress);
     default:
       // Return empty generator for unsupported platforms
       return (async function* () {})();

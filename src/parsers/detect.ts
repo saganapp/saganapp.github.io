@@ -7,6 +7,7 @@ const TWITTER_ARCHIVE_ZIP = /^twitter-\d{4}-\d{2}-\d{2}-[a-f0-9]+\.zip$/i;
 const INSTAGRAM_ARCHIVE_ZIP = /^instagram-.*\.zip$/i;
 const TIKTOK_ARCHIVE_ZIP = /^TikTok_Data_\d+\.zip$/i;
 const SPOTIFY_ARCHIVE_ZIP = /^my_spotify_data\.zip$/i;
+const APPLE_ARCHIVE_ZIP = /^App (Installation|Store) .*\.zip$/i;
 const WHATSAPP_CHAT_EXPORT_ZIP = /^WhatsApp Chat with .+\.zip$/i;
 
 /** Tier 1: instant filename-based detection */
@@ -27,6 +28,9 @@ function detectByFilename(file: File): DetectedFile | null {
   }
   if (SPOTIFY_ARCHIVE_ZIP.test(file.name)) {
     return { file, platform: "spotify", fileType: "zip", confidence: "filename" };
+  }
+  if (APPLE_ARCHIVE_ZIP.test(file.name)) {
+    return { file, platform: "apple", fileType: "zip", confidence: "filename" };
   }
   if (WHATSAPP_CHAT_EXPORT_ZIP.test(file.name)) {
     return { file, platform: "whatsapp", fileType: "zip", confidence: "filename" };
@@ -86,6 +90,14 @@ const CONTENT_SIGNATURES: { platform: Platform; paths: string[] }[] = [
       "Spotify Extended Streaming History/",
       "Streaming_History_Audio_",
       "Spotify Account Data/",
+    ],
+  },
+  {
+    platform: "apple",
+    paths: [
+      "App install activity.csv",
+      "App Store Click Activity.csv",
+      "Store Re-download",
     ],
   },
 ];

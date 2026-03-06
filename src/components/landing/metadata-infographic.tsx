@@ -215,6 +215,13 @@ const exportGuideDefs: {
     },
   },
   {
+    platform: "apple",
+    url: {
+      en: "https://privacy.apple.com/",
+      es: "https://privacy.apple.com/",
+    },
+  },
+  {
     platform: "spotify",
     url: {
       en: "https://support.spotify.com/us/article/data-rights-and-privacy-settings/",

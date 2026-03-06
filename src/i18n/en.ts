@@ -256,6 +256,15 @@ export const en: Record<string, string> = {
     "Account → Privacy → Request extended streaming history (takes ~30 days)",
   "landing.export.spotify.format": "ZIP",
   "landing.export.spotify.note": "Must request extended history specifically",
+  "platform.apple.desc":
+    "App installs, App Store browsing, purchases, search terms, click tracking, and device fingerprints",
+  "platform.apple.guide":
+    "Visit privacy.apple.com → Request a copy of your data",
+  "platform.apple.signal": "Detailed",
+  "landing.export.apple.steps":
+    "Visit privacy.apple.com → Sign in → Request a copy of your data",
+  "landing.export.apple.format": "ZIP",
+  "landing.export.apple.note": "Apple sends multiple ZIP files — import them all",
   "landing.export.garmin.steps":
     "Go to garmin.com/account/datamanagement > Request Data Export",
   "landing.export.garmin.format": "ZIP",
@@ -271,6 +280,7 @@ export const en: Record<string, string> = {
   "platform.telegram.unlock": "Adds messaging patterns, chat names, and conversation timing",
   "platform.garmin.unlock": "Adds activity tracking, sleep analysis, step/stress/body battery trends, hydration patterns, and fitness records",
   "platform.spotify.unlock": "Adds listening schedule, search queries, playlists, social graph, PII exposure, marketing segments, and incognito behavior",
+  "platform.apple.unlock": "Adds App Store browsing patterns, app install history, purchase behavior, search queries, and device tracking",
   "platform.whatsapp.unlock": "Adds account activity, device sessions, and messaging patterns from chat exports",
 
   // Dashboard

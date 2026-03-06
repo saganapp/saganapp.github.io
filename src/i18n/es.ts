@@ -257,6 +257,15 @@ export const es: Record<string, string> = {
     "Cuenta → Privacidad → Solicitar historial de reproducción extendido (~30 días)",
   "landing.export.spotify.format": "ZIP",
   "landing.export.spotify.note": "Debe solicitar el historial extendido específicamente",
+  "platform.apple.desc":
+    "Instalaciones de apps, navegación en App Store, compras, términos de búsqueda, seguimiento de clics y huellas de dispositivo",
+  "platform.apple.guide":
+    "Visita privacy.apple.com → Solicita una copia de tus datos",
+  "platform.apple.signal": "Detallado",
+  "landing.export.apple.steps":
+    "Visita privacy.apple.com → Inicia sesión → Solicita una copia de tus datos",
+  "landing.export.apple.format": "ZIP",
+  "landing.export.apple.note": "Apple envía varios archivos ZIP — impórtalos todos",
   "landing.export.garmin.steps":
     "Ve a garmin.com/account/datamanagement > Solicitar exportación de datos",
   "landing.export.garmin.format": "ZIP",
@@ -272,6 +281,7 @@ export const es: Record<string, string> = {
   "platform.telegram.unlock": "A\u00f1ade patrones de mensajer\u00eda, nombres de chats y horarios de conversaci\u00f3n",
   "platform.garmin.unlock": "Añade seguimiento de actividades, análisis de sueño, tendencias de pasos/estrés/body battery, patrones de hidratación y récords fitness",
   "platform.spotify.unlock": "Añade horario de escucha, búsquedas, playlists, grafo social, exposición de PII, segmentos de marketing y comportamiento incógnito",
+  "platform.apple.unlock": "Añade patrones de navegación en App Store, historial de instalaciones, comportamiento de compra, búsquedas y seguimiento de dispositivos",
   "platform.whatsapp.unlock": "Añade actividad de cuenta, sesiones de dispositivos y patrones de mensajería desde exportaciones de chat",
 
   // Dashboard

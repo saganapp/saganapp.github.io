@@ -69,6 +69,11 @@ function getDevice(timestamp: Date, startMs: number, endMs: number, platform: Pl
   const switchPoint = startMs + (endMs - startMs) * 0.6;
   const isAfterSwitch = timestamp.getTime() > switchPoint;
 
+  // Apple events come from iOS devices
+  if (platform === "apple") {
+    return rand() < 0.7 ? "iPhone" : "iPad";
+  }
+
   // Garmin events come from Garmin Connect
   if (platform === "garmin") {
     return rand() < 0.7 ? "Garmin Connect Web" : "Garmin Connect API";
@@ -96,13 +101,14 @@ function getTimeVaryingPlatformWeights(progress: number): number[] {
   const t = Math.max(0, Math.min(1, (progress - 0.3) / 0.4));
   return [
     0.02,                // whatsapp (constant, minimal — account events only)
-    0.24 - 0.19 * t,    // instagram: 24% → 5%
+    0.23 - 0.19 * t,    // instagram: 23% → 4%
     0.13,                // tiktok (constant)
-    0.12,                // twitter (constant)
-    0.20,                // google (constant)
+    0.11,                // twitter (constant)
+    0.19,                // google (constant)
     0.09 + 0.19 * t,    // telegram: 9% → 28%
     0.08,                // garmin (constant)
     0.12,                // spotify (constant)
+    0.03,                // apple (constant, low weight)
   ];
 }
 
@@ -960,8 +966,8 @@ function generateSingleEvent(
   const metadata: Record<string, unknown> = { device };
   if (contact?.isGroup) metadata.group = contact.name;
 
-  // Connection country for non-Spotify, non-Garmin platforms (makes map multi-platform in demo)
-  if (platform !== "spotify" && platform !== "garmin") {
+  // Connection country for non-Spotify, non-Garmin, non-Apple platforms (makes map multi-platform in demo)
+  if (platform !== "spotify" && platform !== "garmin" && platform !== "apple") {
     metadata.connCountry = rand() < 0.92 ? "ES" : (rand() < 0.5 ? "FR" : "PT");
   }
 
@@ -971,6 +977,23 @@ function generateSingleEvent(
     if (eventType === "message_received") {
       const msgNum = (counters["gmail-msg"] = (counters["gmail-msg"] ?? 0) + 1);
       metadata.messageId = `msg-${String(msgNum).padStart(4, "0")}`;
+    }
+  }
+
+  // Apple metadata for App Store events
+  if (platform === "apple") {
+    const APP_CATALOG = [
+      "Instagram", "WhatsApp", "Spotify", "YouTube", "TikTok",
+      "Netflix", "Google Maps", "Uber", "Shazam", "Duolingo",
+    ];
+    const SEARCH_TERMS = [
+      "photo editor", "weather app", "fitness tracker", "music player",
+      "task manager", "vpn", "games", "meditation", "recipes",
+    ];
+    metadata.subSource = "Click Activity";
+    metadata.appName = APP_CATALOG[Math.floor(rand() * APP_CATALOG.length)];
+    if (eventType === "search") {
+      metadata.searchTerm = SEARCH_TERMS[Math.floor(rand() * SEARCH_TERMS.length)];
     }
   }
 

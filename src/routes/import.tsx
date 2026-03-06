@@ -42,7 +42,7 @@ const item = {
 };
 
 const IMPORT_DISPLAY_ORDER: Platform[] = [
-  "google", "spotify", "twitter", "tiktok", "instagram", "telegram", "garmin", "whatsapp",
+  "google", "apple", "spotify", "twitter", "tiktok", "instagram", "telegram", "garmin", "whatsapp",
 ];
 
 function SignalBars({ level, cssVar }: { level: number; cssVar: string }) {

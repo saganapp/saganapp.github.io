@@ -10,7 +10,7 @@ Live at **[saganapp.github.io](https://saganapp.github.io)**
 
 - **100% Private** — All processing happens locally in the browser. No data is ever uploaded or sent anywhere.
 - **Metadata Only** — Never reads message content. Analyzes timestamps, participants, event types, and patterns.
-- **8 Platforms** — WhatsApp, Instagram, TikTok, X (Twitter), Google (Gmail/Chrome/Calendar/YouTube), Telegram, Garmin, and Spotify.
+- **9 Platforms** — WhatsApp, Instagram, TikTok, X (Twitter), Google (Gmail/Chrome/Calendar/YouTube), Telegram, Garmin, Spotify, and Apple.
 - **20+ Analysis Modules** — Sleep patterns, recurring quiet periods, work-hours impact, device tracking, contact ranking, social circles, cross-platform inferences, and more.
 - **Rich Visualizations** — Timelines, heatmaps, bar charts, device timelines, and inference cards.
 - **Dossier View** — See what a third party could build about you from metadata alone.
@@ -173,6 +173,7 @@ The site is served at [saganapp.github.io](https://saganapp.github.io).
 | Telegram | Sent messages across all chats and groups | Moderate |
 | Garmin | Activities, sleep, daily health (steps/HR/stress/body battery), hydration, wellness goals | Very detailed |
 | Spotify | Full play history, IP addresses, devices, skip patterns, incognito | Very detailed |
+| Apple | App installs, App Store browsing, purchases, search terms, click tracking, device fingerprints | Detailed |
 
 ## License
 
