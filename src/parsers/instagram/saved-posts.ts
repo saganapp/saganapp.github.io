@@ -4,37 +4,35 @@ import { makeInstagramEvent, parseInstagramDate } from "./utils";
 /**
  * Parse saved_posts.html → reaction events (subType: "saved_post").
  *
- * Similar structure to likes: owner username in table + date in _a6-o div.
+ * Actual structure: owner username in <h2> tag, date in _a6_r cell.
  */
 export function parseSavedPosts(html: string): MetadataEvent[] {
   const events: MetadataEvent[] = [];
 
-  // Extract owner usernames — same pattern as likes
-  const ownerRegex =
-    /_a6_q">(?:Nombre de usuario|Username)<\/td><td class="_2piu _a6_r">(.*?)<\/td>/g;
-  const dateRegex = /_a6-o">(.*?)<\/div>/g;
+  // Split into blocks by uiBoxWhite container
+  const blockRegex =
+    /uiBoxWhite noborder">([\s\S]*?)(?=(?:<div class="pam _3-95 _2ph- _a6-g uiBoxWhite noborder">)|$)/g;
 
-  const owners: string[] = [];
-  const dates: string[] = [];
+  let blockMatch;
+  while ((blockMatch = blockRegex.exec(html)) !== null) {
+    const block = blockMatch[1];
 
-  let m;
-  while ((m = ownerRegex.exec(html)) !== null) {
-    owners.push(m[1]);
-  }
-  while ((m = dateRegex.exec(html)) !== null) {
-    dates.push(m[1]);
-  }
+    // Extract owner from <h2>
+    const ownerMatch = block.match(/<h2[^>]*_a6-h[^>]*>([^<]+)<\/h2>/);
+    if (!ownerMatch) continue;
+    const owner = ownerMatch[1].trim();
 
-  const count = Math.min(owners.length, dates.length);
+    // Extract date from _a6_r cell
+    const dateMatch = block.match(/_a6_r">(.*?)<\/td>/);
+    if (!dateMatch) continue;
 
-  for (let i = 0; i < count; i++) {
-    const timestamp = parseInstagramDate(dates[i]);
+    const timestamp = parseInstagramDate(dateMatch[1]);
     if (!timestamp) continue;
 
     events.push(
-      makeInstagramEvent("reaction", timestamp, "me", [owners[i]], {
+      makeInstagramEvent("reaction", timestamp, "me", [owner], {
         subType: "saved_post",
-        owner: owners[i],
+        owner,
       }),
     );
   }

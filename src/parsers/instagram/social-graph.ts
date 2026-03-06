@@ -4,7 +4,8 @@ import { makeInstagramEvent, parseInstagramDate } from "./utils";
 /**
  * Parse following.html or followers_1.html → contact_added events.
  *
- * HTML structure: <h2>username</h2> followed by <div class="_a6-o">date</div>
+ * Splits on uiBoxWhite blocks, extracts username from <h2> or <a> tag,
+ * and date from a plain <div> matching the localized date pattern.
  */
 export function parseInstagramSocialGraph(
   html: string,
@@ -12,31 +13,40 @@ export function parseInstagramSocialGraph(
 ): MetadataEvent[] {
   const events: MetadataEvent[] = [];
 
-  // Extract usernames from <h2> tags and dates from _a6-o divs
-  // The structure pairs each <h2>username</h2> with the next <div class="_a6-o">date</div>
-  const usernameRegex = /<h2[^>]*>([^<]+)<\/h2>/g;
-  const dateRegex = /_a6-o">(.*?)<\/div>/g;
+  // Split into blocks delimited by the uiBoxWhite container class
+  const blockRegex =
+    /uiBoxWhite noborder">([\s\S]*?)(?=(?:<div class="pam _3-95 _2ph- _a6-g uiBoxWhite noborder">)|$)/g;
 
-  const usernames: string[] = [];
-  const dates: string[] = [];
+  let blockMatch;
+  while ((blockMatch = blockRegex.exec(html)) !== null) {
+    const block = blockMatch[1];
 
-  let m;
-  while ((m = usernameRegex.exec(html)) !== null) {
-    usernames.push(m[1]);
-  }
-  while ((m = dateRegex.exec(html)) !== null) {
-    dates.push(m[1]);
-  }
+    // Extract username: prefer <h2>, fall back to <a> tag
+    let username: string | null = null;
+    const h2Match = block.match(/<h2[^>]*>([^<]+)<\/h2>/);
+    if (h2Match) {
+      username = h2Match[1];
+    } else {
+      const aMatch = block.match(/<a[^>]*>([^<]+)<\/a>/);
+      if (aMatch) {
+        username = aMatch[1];
+      }
+    }
+    if (!username) continue;
 
-  const count = Math.min(usernames.length, dates.length);
+    // Extract date: find a <div> containing a localized date pattern
+    // (month abbreviation. DD, YYYY H:MM am/pm)
+    const dateMatch = block.match(
+      /<div>(\s*\S+\.?\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s*(?:am|pm)\s*)<\/div>/i,
+    );
+    if (!dateMatch) continue;
 
-  for (let i = 0; i < count; i++) {
-    const timestamp = parseInstagramDate(dates[i]);
+    const timestamp = parseInstagramDate(dateMatch[1]);
     if (!timestamp) continue;
 
     events.push(
-      makeInstagramEvent("contact_added", timestamp, "me", [usernames[i]], {
-        username: usernames[i],
+      makeInstagramEvent("contact_added", timestamp, "me", [username], {
+        username,
         direction,
       }),
     );
